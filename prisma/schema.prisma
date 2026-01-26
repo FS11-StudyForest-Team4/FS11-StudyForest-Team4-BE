@@ -17,10 +17,9 @@ model Study {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  habits    Habit[]
-  histories History[]
-  emojis    Emoji[]
-  foci      Focus[]
+  habits Habit[]
+  emojis Emoji[]
+  foci   Focus[]
 }
 
 model Habit {
@@ -30,15 +29,16 @@ model Habit {
 
   studyId String
   study   Study  @relation(fields: [studyId], references: [id], onDelete: Cascade)
+
+  histories History[]
 }
 
 model History {
   id        String   @id @default(ulid())
-  name      String
   createdAt DateTime @default(now())
 
-  studyId String
-  study   Study  @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  habitId String
+  habit   Habit  @relation(fields: [habitId], references: [id], onDelete: Cascade)
 }
 
 model Emoji {
