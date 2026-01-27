@@ -11,7 +11,7 @@ const BACKGROUNDS = [
   'YELLOW',
   'BLUE',
   'PINK',
-  'DESIGIN',
+  'DESIGN',
   'STUDY',
   'TILE',
   'LEAF',
