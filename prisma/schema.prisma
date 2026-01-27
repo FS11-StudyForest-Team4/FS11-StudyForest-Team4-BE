@@ -12,7 +12,7 @@ enum Background {
   YELLOW
   BLUE
   PINK
-  DESIGIN
+  DESIGN
   STUDY
   TILE
   LEAF
@@ -68,7 +68,7 @@ model Emoji {
 
   studyId String
   study   Study  @relation(fields: [studyId], references: [id], onDelete: Cascade)
-  
+
   @@unique([studyId, name])
 }
 
