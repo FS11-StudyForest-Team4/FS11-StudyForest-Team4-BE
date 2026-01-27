@@ -6,9 +6,9 @@
     "#generated/*": "./generated/*",
     "#config": "./src/config/config.js",
     "#db/*": "./src/db/*",
-    "#repository": "./src/repository/index.js", 
-    "#constants": "./src/constants/index.js", 
-    "#utils": "./src/utils/index.js", 
+    "#repository": "./src/repository/index.js",
+    "#constants": "./src/constants/index.js",
+    "#utils": "./src/utils/index.js",
     "#middlewares": "./src/middlewares/index.js",
     "#exceptions": "./src/exceptions/index.js"
   },
@@ -21,7 +21,9 @@
     "dev": "nodemon --env-file=./env/.env.development src/server.js",
     "prod": "node --env-file=./env/.env.production src/server.js",
     "prisma:migrate": "dotenv -e ./env/.env.development -- npx prisma migrate dev",
+    "prisma:migrate:reset": "dotenv -e ./env/.env.development -- npx prisma migrate reset",
     "prisma:studio": "dotenv -e ./env/.env.development -- npx prisma studio",
+    "seed": "node --env-file=./env/.env.development scripts/seed.js",
     "prisma:generate": "dotenv -e ./env/.env.development -- npx prisma generate",
     "format": "npx prettier --write .",
     "format:check": "npx prettier --check ."
@@ -40,6 +42,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@faker-js/faker": "^10.2.0",
     "eslint": "^9.39.2",
     "nodemon": "^3.1.11",
     "prettier": "^3.8.0",
