@@ -107,7 +107,7 @@ const seedHistories = async (prisma, habits) => {
 //스터디에 이모지 시딩
 const seedEmojis = async (prisma, studies) => {
   const data = studies.flatMap((s) => {
-    const count = faker.number.int({ min: 1, max: 5 });
+    const count = faker.number.int({ min: 3, max: 9 });
     const emojis = makeEmojiInputsForStudy(s.id, count);
 
     // 스터디 단위로 유니크
