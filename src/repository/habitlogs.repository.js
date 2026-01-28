@@ -2,7 +2,7 @@ import { prisma } from '#db/prisma.js';
 
 // 습관기록 등록
 function createHabitlog(habitId, data) {
-  return prisma.habit.create({
+  return prisma.habitlog.create({
     data: {
       ...data,
       habitId,
