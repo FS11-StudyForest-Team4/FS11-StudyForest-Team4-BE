@@ -1,5 +1,5 @@
 import express from 'express';
-import { studiesRouter } from './studies/index.js'
+import { studiesRouter } from './studies/studies.routes.js'
 import { habitsRouter } from './habits/habits.routes.js';
 
 

@@ -4,6 +4,7 @@ import { config } from "#config";
 import { router } from './routes/index.js';
 import { cors } from "./middlewares/cors.middleware.js";
 import { setupGracefulShutdown } from "./utils/graceful-shutdown.util.js";
+import { errorHandler } from "#middlewares";
 
 
 const app = express();
@@ -14,7 +15,7 @@ app.use(cors);
 
 app.use('/', router);
 
-// app.use(errorHandler);
+app.use(errorHandler);
 
 const server = app.listen(config.PORT, () => {
   console.log(

@@ -1,2 +1,3 @@
-export { habitRepository } from './habitlogs.repository.js'
-export { habitlogRepository } from './habitlogs.repository.js'
+export { habitRepository} from './habits.repository.js'
+export { habitlogRepository} from './habitlogs.repository.js'
+export { studyRepository } from './study.repository.js'

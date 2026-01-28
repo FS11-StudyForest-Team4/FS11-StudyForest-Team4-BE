@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 // ID 파라미터 검증 스키마
-export const idParamSchema = z.object({
-  id: z.string().regex(/^[0-9A-HJKMNP-TV-Z]{26}$/, {
+export const studyIdParamSchema = z.object({
+  studyId: z.string().regex(/^[0-9A-HJKMNP-TV-Z]{26}$/, {
     message: '유효한 ULID 형식의 ID가 아닙니다.',
   }),
 });

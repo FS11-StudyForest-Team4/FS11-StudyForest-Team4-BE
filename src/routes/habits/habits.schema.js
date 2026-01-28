@@ -9,5 +9,5 @@ export const idParamSchema = z.object({
 
 // 습관 수정 스키마
 export const updateHabitSchema = z.object({
-  title: z.string().min(1, '습관이름은 필수입니다.'),
+  name: z.string().min(1, '습관이름은 필수입니다.'),
 });

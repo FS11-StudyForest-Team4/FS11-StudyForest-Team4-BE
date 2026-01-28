@@ -18,7 +18,7 @@ habitsRouter.patch(
       const { id } = req.params;
       const { name } = req.body;
 
-      const existingHabit = await habitRepository.findCommentById(id);
+      const existingHabit = await habitRepository.findHabitById(id);
       if (!existingHabit) {
         throw new NotFoundException(ERROR_MESSAGE.HABIT_NOT_FOUND);
       }

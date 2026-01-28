@@ -6,9 +6,16 @@ function creatHabit(studyId, data) {
   return prisma.habit.create({
     data: {
       ...data,
-      studyId,
+       studyId,
     }
   })
+}
+
+// 특정 습관 조회 
+function findHabitById(id) {
+  return prisma.habit.findUnique({
+    where: { id },
+  });
 }
 
 // 습관 수정
@@ -36,6 +43,7 @@ function findHabitsForStudy(studyId) {
 
 export const habitRepository = {
   creatHabit,
+  findHabitById,
   updateHabit,
   deleteHabit,
   findHabitsForStudy,
