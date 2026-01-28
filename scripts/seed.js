@@ -40,7 +40,7 @@ const makeHabitInputsForStudy = (studyId, count) =>
   }));
 
 // 습관 기록 데이터 생성 함수
-const makeHistoryInputsForHabit = (habitId, count) =>
+const makeHabitlogInputsForHabit = (habitId, count) =>
   xs(count).map(() => ({
     habitId,
   }));
@@ -64,7 +64,7 @@ const makeFocusInputsForStudy = (studyId, count) =>
 //trasaction
 const resetDb = (prisma) =>
   prisma.$transaction([
-    prisma.history.deleteMany(),
+    prisma.Habitlog.deleteMany(),
     prisma.emoji.deleteMany(),
     prisma.focus.deleteMany(),
     prisma.habit.deleteMany(),
@@ -93,12 +93,12 @@ const seedHabits = async (prisma, studies) => {
 };
 
 // 습관에 습관기록 시딩
-const seedHistories = async (prisma, habits) => {
+const seedHabitlogs = async (prisma, habits) => {
   const data = habits
     .map((h) => ({ id: h.id, count: faker.number.int({ min: 1, max: 1 }) }))
-    .flatMap(({ id, count }) => makeHistoryInputsForHabit(id, count));
+    .flatMap(({ id, count }) => makeHabitlogInputsForHabit(id, count));
 
-  return await prisma.history.createManyAndReturn({
+  return await prisma.Habitlog.createManyAndReturn({
     data,
     select: { id: true },
   });
@@ -154,8 +154,8 @@ async function main(prisma) {
   const habits = await seedHabits(prisma, studies);
   console.log(`✅ ${habits.length}개의 습관이 생성되었습니다`);
 
-  const histories = await seedHistories(prisma, habits);
-  console.log(`✅ ${histories.length}개의 습관기록이 생성되었습니다`);
+  const Habitlogs = await seedHabitlogs(prisma, habits);
+  console.log(`✅ ${Habitlogs.length}개의 습관기록이 생성되었습니다`);
 
   const emojis = await seedEmojis(prisma, studies);
   console.log(`✅ ${emojis.length}개의 이모지가 생성되었습니다`);
