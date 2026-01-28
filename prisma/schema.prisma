@@ -50,10 +50,10 @@ model Habit {
   studyId String
   study   Study  @relation(fields: [studyId], references: [id], onDelete: Cascade)
 
-  histories History[]
+  habitlogs Habitlog[]
 }
 
-model History {
+model Habitlog {
   id        String   @id @default(ulid())
   createdAt DateTime @default(now())
 
