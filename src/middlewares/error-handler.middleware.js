@@ -14,13 +14,13 @@ export const errorHandler = (err, req, res, _next) => {
   }
 
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    if (err.code === PRISMA_ERROR.UNIQUE_CONSTRAINT) {
-      const field = err.meta?.target?.[0];
-      return res.status(HTTP_STATUS.CONFLICT).json({
-        success: false,
-        message: `${field}가 이미 사용 중입니다.`,
-      });
-    }
+    // if (err.code === PRISMA_ERROR.UNIQUE_CONSTRAINT) {
+    //   const field = err.meta?.target?.[0];
+    //   return res.status(HTTP_STATUS.CONFLICT).json({
+    //     success: false,
+    //     message: `${field}가 이미 사용 중입니다.`,
+    //   });
+    // }
 
     // P2025: Record not found
     if (err.code === PRISMA_ERROR.RECORD_NOT_FOUND) {

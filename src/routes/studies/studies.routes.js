@@ -1,7 +1,7 @@
 import express from 'express';
 import { studyRepository } from '#repository';
 import { HTTP_STATUS, ERROR_MESSAGE } from '#constants';
-import { /*authMiddleware,*/ validate } from '#middlewares';
+import { authMiddleware, validate } from '#middlewares';
 import {
   createStudySchema,
   idParamSchema,
@@ -14,6 +14,7 @@ export const studiesRouter = express.Router();
 //스터디 생성:POST /api/studies
 studiesRouter.post(
   '/',
+  authMiddleware,
   validate('body', createStudySchema),
   async (req, res, next) => {
     try {
@@ -50,10 +51,6 @@ studiesRouter.get(
     try {
       const { id } = req.params;
       const study = await studyRepository.findById(id);
-      if (!study) {
-        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
-      }
-
       res.status(HTTP_STATUS.OK).json(study);
     } catch (error) {
       next(error);
@@ -64,7 +61,7 @@ studiesRouter.get(
 //특정 스터디 수정: PATCH /api/studies/{studyId}
 studiesRouter.patch(
   '/:id',
-  // authMiddleware,
+  authMiddleware,
   validate('params', idParamSchema),
   validate('body', updateStudySchema),
   async (req, res, next) => {
@@ -77,7 +74,7 @@ studiesRouter.patch(
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
       }
 
-      const updatedStudy = await studyRepository.edit(id, {
+      const updatedStudy = await studyRepository.update(id, {
         password,
         title,
         description,
@@ -95,7 +92,7 @@ studiesRouter.patch(
 //특정 스터디 삭제: DELETE /api/studies/{studyId}
 studiesRouter.delete(
   '/:id',
-  // authMiddleware,
+  authMiddleware,
   validate('params', idParamSchema),
   async (req, res, next) => {
     try {
