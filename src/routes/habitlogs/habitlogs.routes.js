@@ -10,7 +10,7 @@ export const habitlogsRouter = express.Router();
 
 //습관기록 조회
 habitlogsRouter.get(
-  '/habits/habitlogs', 
+  'studies/:id/habitlogs', 
    validate('query', habitlogQuerySchema),
   async (req, res, next) => {
   try {

@@ -3,7 +3,7 @@ import express from 'express';
 import { HTTP_STATUS, ERROR_MESSAGE } from '#constants';
 import { validate } from '#middlewares';
 import { NotFoundException } from '#exceptions';
-import { idParamSchema, updateHabitSchema } from './habits.schema.js';
+import { habitIdParamSchema, updateHabitSchema } from './habits.schema.js';
 
 
 export const habitsRouter = express.Router()
@@ -14,20 +14,20 @@ export const habitsRouter = express.Router()
 
 // PATCH / habits/:id - 습관 수정
 habitsRouter.patch(
-  '/:id',
-  validate('params', idParamSchema),
+  '/:habitId',
+  validate('params', habitIdParamSchema),
   validate('body', updateHabitSchema),
   async (req, res, next) => {
     try {
-      const { id } = req.params;
+      const { habitId } = req.params;
       const { name } = req.body;
 
-      const existingHabit = await habitRepository.findHabitById(id);
+      const existingHabit = await habitRepository.findHabitById(habitId);
       if (!existingHabit) {
         throw new NotFoundException(ERROR_MESSAGE.HABIT_NOT_FOUND);
       }
 
-      const updatedHabit= await habitRepository.updateHabit(id, {
+      const updatedHabit= await habitRepository.updateHabit(habitId, {
         name,
       });
       res.status(HTTP_STATUS.OK).json(updatedHabit);
@@ -39,17 +39,17 @@ habitsRouter.patch(
 
 // DELETE /habits/:id - 습관 삭제
 habitsRouter.delete(
-  '/:id',
-  validate('params', idParamSchema),
+  '/:habitId',
+  validate('params', habitIdParamSchema),
   async (req, res, next) => {
     try {
-      const { id } = req.params;
-      const existingHabit = await habitRepository.findHabitById(id);
+      const { habitId } = req.params;
+      const existingHabit = await habitRepository.findHabitById(habitId);
       if (!existingHabit) {
         throw new NotFoundException(ERROR_MESSAGE.HABIT_NOT_FOUND);
       }
 
-      await habitRepository.deleteHabit(id);
+      await habitRepository.deleteHabit(habitId);
       res.sendStatus(HTTP_STATUS.NO_CONTENT);
     } catch (error) {
       next(error);
@@ -60,11 +60,11 @@ habitsRouter.delete(
 
 //습관기록 등록 or 습관완료
 habitsRouter.post(
-  '/:id/habitlogs',
-  validate('params', idParamSchema),
+  '/:habitId/habitlog',
+  validate('params', habitIdParamSchema),
   async (req, res, next) => {
     try {
-      const { id: habitId } = req.params;
+      const { habitId } = req.params;
       const habit = await habitRepository.findHabitById(habitId);
       if (!habit) {
         throw new NotFoundException(ERROR_MESSAGE.HABIT_NOT_FOUND);
