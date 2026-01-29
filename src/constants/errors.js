@@ -9,7 +9,6 @@ export const ERROR_MESSAGE = {
   
   //Study
   STUDY_NOT_FOUND: 'Study not found', //studyId 404 공통
-  FAILED_TO_FETCH_STUDY: 'Failed to fetch studies', //스터디 목록 조회 500
   FAILED_TO_FETCH_STUDY: 'Failed to fetch study', //스터디 조회 500
   FAILED_TO_CREATE_STUDY: 'Failed to create study', //스터디 생성 500
   FAILED_TO_UPDATE_STUDY: 'Failed to update study', //스터디 수정 500
@@ -25,7 +24,7 @@ export const ERROR_MESSAGE = {
   FAILED_TO_POST_EMOJIS: 'Failed to post emojis', //이모지 추가 500
   FAILED_TO_DELETE_EMOJIS: 'Failed to delete emojis', //이모지 삭제 500
   EMOJI_REQUIRED: 'emoji is required', //이모지 생성/수정 400 - 이모지 필수값
-  EMOJI_NOT_FOUND: 'emoji is no found'
+  EMOJI_NOT_FOUND: 'emoji is no found',
 
   //비밀번호 확인(PRIVATE 진입 전)
   INVALID_CREDENTIALS: 'Invalid password', //비밀번호 불일치 401 공통(스터디 생성, 습관, 집중)

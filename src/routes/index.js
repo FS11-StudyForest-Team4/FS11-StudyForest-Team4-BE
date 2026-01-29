@@ -1,5 +1,5 @@
 import express from 'express';
-import { emojiRouter } from './emoji.routes.js';
+import { emojiRouter } from './emojis/index.js';
 
 export const router = express.Router();
 

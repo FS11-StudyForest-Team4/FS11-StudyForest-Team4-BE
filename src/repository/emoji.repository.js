@@ -4,27 +4,17 @@ import { prisma } from '#db/prisma.js';
 function findEmojisByStudyId(studyId) {
   return prisma.emoji.findMany({
     where: { studyId },
-    orderBy: { count: 'desc' },
+    orderBy: { count: 'desc' }, //최신 -> 과거
   });
 }
 
-//이모지 생성 (첫 생성시 count = 1)
-function createEmoji(studyId, name) {
+//이모지 count 증가
+function emojiCount(studyId, name) {
   return prisma.emoji.create({
     data: {
       studyId,
       name,
       count: 1,
-    },
-  });
-}
-
-//이모지 count 증가
-function increaseEmojiCount(emojiId) {
-  return prisma.emoji.update({
-    where: { id: emojiId },
-    data: {
-      count: { increment: 1 },
     },
   });
 }
@@ -45,8 +35,7 @@ function deleteEmoji(emojiId) {
 
 export const emojiRepository = {
   findEmojisByStudyId,
-  createEmoji,
+  emojiCount,
   findEmojiById,
-  increaseEmojiCount,
   deleteEmoji,
 };
