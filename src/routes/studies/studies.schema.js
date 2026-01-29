@@ -12,7 +12,7 @@ const optionalStringSchema = (minLen, errorMessage) =>
 
 //PK 검증 스키마
 export const idParamSchema = z.object({
-  id: z.string().length(26, {
+  id: z.ulid({
     message: 'ID 형식이 올바르지 않습니다.', //~~우린 ulid를 식별자로 쓰기로 약속했어요~~
   }),
 });

@@ -19,7 +19,7 @@ studiesRouter.post(
   async (req, res, next) => {
     try {
       const { password, title, description, nickName, background } = req.body;
-      const newStudy = await studyRepository.createStudy({
+      const newStudy = await studyRepository.create({
         password,
         title,
         description,
@@ -36,7 +36,7 @@ studiesRouter.post(
 //스터디 목록 조회: GET /api/studies
 studiesRouter.get('/', async (req, res, next) => {
   try {
-    const studies = await studyRepository.findStudyList();
+    const studies = await studyRepository.findList();
     res.status(HTTP_STATUS.OK).json(studies);
   } catch (error) {
     next(error);
@@ -50,7 +50,7 @@ studiesRouter.get(
   async (req, res, next) => {
     try {
       const { id } = req.params;
-      const study = await studyRepository.findStudyById(id);
+      const study = await studyRepository.findById(id);
       res.status(HTTP_STATUS.OK).json(study);
     } catch (error) {
       next(error);
@@ -69,12 +69,12 @@ studiesRouter.patch(
       const { id } = req.params;
       const { password, title, description, nickName, background } = req.body;
 
-      const studyIsHere = await studyRepository.findStudyById(id);
-      if (!studyIsHere) {
+      const study = await studyRepository.findById(id);
+      if (!study) {
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
       }
 
-      const updatedStudy = await studyRepository.updateStudy(id, {
+      const updatedStudy = await studyRepository.update(id, {
         password,
         title,
         description,
@@ -97,14 +97,16 @@ studiesRouter.delete(
   async (req, res, next) => {
     try {
       const { id } = req.params;
-      const studyIsHere = await studyRepository.findStudyById(id);
-      if (!studyIsHere) {
+      const study = await studyRepository.findById(id);
+      if (!study) {
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
       }
 
-      const deletedStudy = await studyRepository.deleteStudy(id);
+      const deletedStudy = await studyRepository.remove(id);
 
-      res.status(HTTP_STATUS.NO_CONTENT).json({message: '스터디가 삭제되었습니다.', ...deletedStudy});
+      res
+        .status(HTTP_STATUS.NO_CONTENT)
+        .json({ message: '스터디가 삭제되었습니다.', ...deletedStudy });
     } catch (error) {
       next(error);
     }
