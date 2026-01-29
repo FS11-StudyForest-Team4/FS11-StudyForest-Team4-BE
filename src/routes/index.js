@@ -1,9 +1,16 @@
 import express from 'express';
-import { studiesRouter } from './studies/studies.routes.js'
+import { studyRouter } from './studies/index.js'
 import { habitsRouter } from './habits/habits.routes.js';
+import { HTTP_STATUS } from '#constants';
 
 
 export const router = express.Router();
 
-router.use('/studies', studiesRouter)
+router.get('/', (req, res) => {
+  res
+    .status(HTTP_STATUS.OK)
+    .send({ now: new Date().toISOString(), Message: 'OK' });
+});
+
+router.use('/studies', studyRouter)
 router.use('/habits', habitsRouter)

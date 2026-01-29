@@ -21,10 +21,10 @@ function findHabitlogs(startOfWeek, endOfWeek) {
         gte: start,
         lte: end,
       },
-      select: {
-        habitId: true,
-        createdAt: true,
-      },
+    },
+    select: {
+      habitId: true,
+      createdAt: true,
     },
   });
 }
@@ -32,4 +32,4 @@ function findHabitlogs(startOfWeek, endOfWeek) {
 export const habitlogRepository = {
   createHabitlog,
   findHabitlogs,
-}
+};

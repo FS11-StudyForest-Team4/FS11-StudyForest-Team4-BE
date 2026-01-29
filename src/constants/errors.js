@@ -11,6 +11,12 @@ export const ERROR_MESSAGE = {
   FAILED_TO_CREATE_STUDY: 'Failed to create study', //스터디 생성 500
   FAILED_TO_UPDATE_STUDY: 'Failed to update study', //스터디 수정 500
   FAILED_TO_DELETE_STUDY: 'Failed to delete study', //스터디 삭제 500
+  PASSWORD_REQUIRED: 'Password is required', //스터디 생성/수정 400 - 비밀번호 필수값
+  TITLE_REQUIRED: 'Title is required', //스터디 생성/수정 400 - 제목 필수값
+  DESCRIPTION_REQUIRED: 'Description is required', //스터디 생성/수정 400 - 소개 필수값: 필수값이어야 하는지 확인부탁드립니다.
+  NICKNAME_REQUIRED: 'Nickname is required', //스터디 생성/수정 400 - 닉네임 필수값
+  SEARCH_QUERY_REQUIRED: 'Search query is required', //스터디 검색 400 - 쿼리 필요 -> API 한번 봐주세요
+  FAILED_TO_FETCH_STUDY_WITH_HABITS: 'Failed to fetch study with habits', //오늘의 습관 조회(…
 
   // 습관
   FAILED_TO_CREATE_HABIT: 'Failed to create habit', //습관 생성 500
