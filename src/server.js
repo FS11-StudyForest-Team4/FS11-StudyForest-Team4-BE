@@ -13,6 +13,7 @@ app.use(express.json());
 
 app.use(cors);
 
+//API 라우터 등록
 app.use('/api', apiRouter);
 
 app.use(errorHandler);
