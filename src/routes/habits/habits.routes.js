@@ -5,12 +5,7 @@ import { validate } from '#middlewares';
 import { NotFoundException } from '#exceptions';
 import { habitIdParamSchema, updateHabitSchema } from './habits.schema.js';
 
-
-export const habitsRouter = express.Router()
-
-
-
-
+export const habitsRouter = express.Router();
 
 // PATCH / habits/:id - 습관 수정
 habitsRouter.patch(
@@ -22,12 +17,12 @@ habitsRouter.patch(
       const { habitId } = req.params;
       const { name } = req.body;
 
-      const existingHabit = await habitRepository.findHabitById(habitId);
+      const existingHabit = await habitRepository.findById(habitId);
       if (!existingHabit) {
         throw new NotFoundException(ERROR_MESSAGE.HABIT_NOT_FOUND);
       }
 
-      const updatedHabit= await habitRepository.updateHabit(habitId, {
+      const updatedHabit = await habitRepository.update(habitId, {
         name,
       });
       res.status(HTTP_STATUS.OK).json(updatedHabit);
@@ -44,19 +39,18 @@ habitsRouter.delete(
   async (req, res, next) => {
     try {
       const { habitId } = req.params;
-      const existingHabit = await habitRepository.findHabitById(habitId);
+      const existingHabit = await habitRepository.findById(habitId);
       if (!existingHabit) {
         throw new NotFoundException(ERROR_MESSAGE.HABIT_NOT_FOUND);
       }
 
-      await habitRepository.deleteHabit(habitId);
+      await habitRepository.remove(habitId);
       res.sendStatus(HTTP_STATUS.NO_CONTENT);
     } catch (error) {
       next(error);
     }
   },
 );
-
 
 //습관기록 등록 or 습관완료
 habitsRouter.post(
@@ -65,11 +59,11 @@ habitsRouter.post(
   async (req, res, next) => {
     try {
       const { habitId } = req.params;
-      const habit = await habitRepository.findHabitById(habitId);
+      const habit = await habitRepository.findById(habitId);
       if (!habit) {
         throw new NotFoundException(ERROR_MESSAGE.HABIT_NOT_FOUND);
       }
-      const newHabitlog = await habitlogRepository.createHabitlog(habitId);
+      const newHabitlog = await habitlogRepository.create(habitId);
       res.status(HTTP_STATUS.CREATED).json(newHabitlog);
     } catch (error) {
       next(error);

@@ -1,7 +1,7 @@
 import { prisma } from '#db/prisma.js';
 
 // 습관기록 등록
-function createHabitlog(habitId, data) {
+function create(habitId, data) {
   return prisma.habitlog.create({
     data: {
       ...data,
@@ -30,6 +30,6 @@ function findHabitlogs(startOfWeek, endOfWeek) {
 }
 
 export const habitlogRepository = {
-  createHabitlog,
+  create,
   findHabitlogs,
 };

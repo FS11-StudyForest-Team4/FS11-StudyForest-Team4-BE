@@ -2,7 +2,7 @@ import { prisma } from '#db/prisma.js';
 
 
 // 습관 등록 
-function creatHabit(studyId, data) {
+function creat(studyId, data) {
   return prisma.habit.create({
     data: {
       ...data,
@@ -12,14 +12,14 @@ function creatHabit(studyId, data) {
 }
 
 // 특정 습관 조회 
-function findHabitById(id) {
+function findById(id) {
   return prisma.habit.findUnique({
     where: { id },
   });
 }
 
 // 습관 수정
-function updateHabit(id, data) {
+function update(id, data) {
   return prisma.habit.update({
     where: { id },
     data,
@@ -27,7 +27,7 @@ function updateHabit(id, data) {
 }
 
 // 습관 삭제 
-function deleteHabit(id) {
+function remove(id) {
   return prisma.habit.delete({
     where: { id },
   })
@@ -42,9 +42,9 @@ function findHabitsForStudy(studyId) {
 }
 
 export const habitRepository = {
-  creatHabit,
-  findHabitById,
-  updateHabit,
-  deleteHabit,
+  creat,
+  findById,
+  update,
+  remove,
   findHabitsForStudy,
 }
