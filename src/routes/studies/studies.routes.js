@@ -49,7 +49,7 @@ studiesRouter.post(
       if (!study) {
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
       }
-      const newHabit = await habitRepository.creat(studyId, {
+      const newHabit = await habitRepository.create(studyId, {
         name,
       });
       res.status(HTTP_STATUS.CREATED).json(newHabit);
