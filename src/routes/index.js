@@ -1,6 +1,6 @@
 import express from 'express';
-import { focusRouter } from './focus.routes.js';
 import { emojiRouter } from './emojis/index.js';
+import { focusRouter } from './foci/index.js';
 
 export const router = express.Router();
 

@@ -1,5 +1,7 @@
 import { prisma } from '#db/prisma.js';
 
+const POINT_PER_COMPLETE = 50;
+
 export const focusRepository = {
   async getTotalPoint(studyId) {
     return prisma.study.findUnique({
@@ -22,27 +24,17 @@ export const focusRepository = {
     });
   },
 
-  async createFocus(studyId) {
+  async create(studyId) {
     return prisma.focus.create({
       data: {
         studyId,
         status: 'RUNNING',
         point: 0,
       },
-      select: {
-        id: true,
-        status: true,
-        point: true,
-        startedAt: true,
-        updatedAt: true,
-        studyId: true,
-      },
     });
   },
 
-  async completeFocus(focusId) {
-    const POINT_PER_COMPLETE = 50;
-
+  async complete(focusId) {
     return prisma.$transaction(async (tx) => {
       // focus 완료
       const focus = await tx.focus.update({
@@ -75,7 +67,7 @@ export const focusRepository = {
   },
 
   // 진행중인 세션 찾기
-  async findFocus(studyId) {
+  async findByStudyId(studyId) {
     return prisma.focus.findFirst({
       where: {
         studyId,
@@ -92,7 +84,7 @@ export const focusRepository = {
   },
 
   // 세션 취소
-  async cancelFocus(focusId) {
+  async cancel(focusId) {
     return prisma.focus.update({
       where: { id: focusId },
       data: { status: 'CANCELED', point: 0 },
@@ -106,7 +98,7 @@ export const focusRepository = {
   },
 
   // 세션 일시정지
-  async pauseFocus(focusId) {
+  async pause(focusId) {
     return prisma.focus.updateMany({
       where: {
         id: focusId,
@@ -117,7 +109,7 @@ export const focusRepository = {
   },
 
   // 세션 재개
-  async resumeFocus(focusId) {
+  async resume(focusId) {
     return prisma.focus.updateMany({
       where: {
         id: focusId,
