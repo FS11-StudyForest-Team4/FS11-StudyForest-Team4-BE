@@ -8,7 +8,7 @@ export const emojisRouter = express.Router();
 emojisRouter.get('/:studyId', async (req, res, next) => {
   const { studyId } = req.params;
   try {
-    const emoji = await emojiRepository.findEmojisByStudyId(studyId);
+    const emoji = await emojiRepository.findByStudyId(studyId);
 
     res.json(emoji);
   } catch (error) {
@@ -22,10 +22,7 @@ emojisRouter.post('/:studyId', async (req, res, next) => {
     const { studyId } = req.params;
     const { name } = req.body;
 
-    const newEmoji = await emojiRepository.emojiCount({
-      name,
-      studyId: String(studyId),
-    });
+    const newEmoji = await emojiRepository.incrementOrCreate({ studyId, name });
 
     res.status(HTTP_STATUS.CREATED).json(newEmoji);
   } catch (error) {
@@ -36,22 +33,22 @@ emojisRouter.post('/:studyId', async (req, res, next) => {
 //DELETE /api/emojis/:studyId/:emojiId - 이모지 삭제
 emojisRouter.delete('/:studyId/:emojiId', async (req, res, next) => {
   try {
-    const { emojiId } = req.params;
-    const emoji = await emojiRepository.findEmojiById(emojiId);
+    const { studyId, emojiId } = req.params;
+    const emoji = await emojiRepository.findById(emojiId);
 
-    if (!emoji) {
+    if (!emoji || emoji.studyId !== studyId) {
       return res
         .status(HTTP_STATUS.NOT_FOUND)
         .json({ message: '이모지를 찾을 수 없습니다.' });
     }
 
-    if (emoji.count !== 0) {
+    if (emoji.count > 0) {
       return res
         .status(HTTP_STATUS.CONFLICT)
         .json({ error: ERROR_MESSAGE.FAILED_TO_DELETE_EMOJIS });
     }
 
-    await emojiRepository.deleteEmoji(emojiId);
+    await emojiRepository.remove(emojiId);
     res.status(HTTP_STATUS.NO_CONTENT).send();
   } catch (error) {
     next(error);
