@@ -1,8 +1,8 @@
-import express from "express";
-import { prisma } from "#db/prisma.js";
-import { config } from "#config";
-import { cors } from "./middlewares/cors.middleware.js";
-import { setupGracefulShutdown } from "./utils/graceful-shutdown.util.js";
+import express from 'express';
+import { prisma } from '#db/prisma.js';
+import { config } from '#config';
+import { cors } from './middlewares/cors.middleware.js';
+import { setupGracefulShutdown } from './utils/graceful-shutdown.util.js';
 
 const app = express();
 
