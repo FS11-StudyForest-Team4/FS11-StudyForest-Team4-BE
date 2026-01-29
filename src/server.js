@@ -1,8 +1,9 @@
-import express from "express";
-import { prisma } from "#db/prisma.js";
-import { config } from "#config";
-import { cors } from "./middlewares/cors.middleware.js";
-import { setupGracefulShutdown } from "./utils/graceful-shutdown.util.js";
+import express from 'express';
+import { prisma } from '#db/prisma.js';
+import { config } from '#config';
+import { cors } from './middlewares/cors.middleware.js';
+import { setupGracefulShutdown } from './utils/graceful-shutdown.util.js';
+import { router as apiRouter } from './routes/index.js';
 
 const app = express();
 
@@ -10,7 +11,8 @@ app.use(express.json());
 
 app.use(cors);
 
-// app.use('/api', apiRouter);
+//API 라우터 등록
+app.use('/api', apiRouter);
 
 // app.use(errorHandler);
 
