@@ -16,7 +16,7 @@ studiesRouter.get(
   async (req, res, next) => {
     try {
       const { studyId } = req.params;
-      const { startOfWeek, endOfWeek } = req.query;
+      const { startOfWeek } = req.query;
 
       const study = await studyRepository.findStudyById(studyId);
       if (!study) {
@@ -25,7 +25,6 @@ studiesRouter.get(
 
       const habitlogs = await habitlogRepository.findHabitlogs(
         startOfWeek,
-        endOfWeek,
       );
       res.status(HTTP_STATUS.OK).json(habitlogs);
     } catch (error) {

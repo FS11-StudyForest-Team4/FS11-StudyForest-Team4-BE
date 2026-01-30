@@ -16,5 +16,4 @@ export const createHabitSchema = z.object({
 
 export const habitlogQuerySchema = z.object({
   startOfWeek: z.iso.date('startOfWeek 날짜형식은 YYYY-MM-DD 여야 합니다.'),
-  endOfWeek: z.iso.date('startOfWeek 날짜형식은 YYYY-MM-DD 여야 합니다.')
 })
