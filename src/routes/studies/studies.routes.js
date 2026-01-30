@@ -35,7 +35,13 @@ studiesRouter.post(
 //스터디 목록 조회: GET /api/studies
 studiesRouter.get('/', async (req, res, next) => {
   try {
-    const studies = await studyRepository.findList();
+    const studies = await studyRepository.findAll({
+      emojis: {
+        orderBy: {
+          count: 'desc',
+        },
+      },
+    });
     res.status(HTTP_STATUS.OK).json(studies);
   } catch (error) {
     next(error);
@@ -49,7 +55,13 @@ studiesRouter.get(
   async (req, res, next) => {
     try {
       const { id } = req.params;
-      const study = await studyRepository.findById(id);
+      const study = await studyRepository.findById(id, {
+        emojis: {
+          orderBy: {
+            count: 'desc',
+          },
+        },
+      });
       if (!study) {
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
       }

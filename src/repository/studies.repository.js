@@ -11,7 +11,7 @@ function create(data) {
 }
 
 //스터디 목록 조회
-function findList(include = null) {
+function findAll(include = null) {
   return prisma.study.findMany({
     ...(include && { include }),
   });
@@ -42,7 +42,7 @@ function remove(id) {
 
 export const studyRepository = {
   create,
-  findList,
+  findAll,
   findById,
   edit,
   remove,
