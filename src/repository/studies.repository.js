@@ -71,10 +71,7 @@ function findById(id, include = null) {
 //스터디 생성
 function create(data) {
   return prisma.study.create({
-    data: {
-      ...data,
-      totalPoint: 0, //초기값
-    },
+    data,
   });
 }
 

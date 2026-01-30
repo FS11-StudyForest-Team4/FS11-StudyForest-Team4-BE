@@ -130,12 +130,8 @@ studiesRouter.delete(
       if (!study) {
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
       }
-
-      const deletedStudy = await studyRepository.remove(id);
-
-      res
-        .status(HTTP_STATUS.NO_CONTENT)
-        .json({ message: '스터디가 삭제되었습니다.', ...deletedStudy });
+      await studyRepository.remove(id);
+      res.status(HTTP_STATUS.NO_CONTENT).send();
     } catch (error) {
       next(error);
     }
