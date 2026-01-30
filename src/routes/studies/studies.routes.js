@@ -4,6 +4,7 @@ import { HTTP_STATUS, ERROR_MESSAGE } from '#constants';
 import { /*authMiddleware,*/ validate } from '#middlewares';
 import {
   createStudySchema,
+  findStudySchema,
   idParamSchema,
   updateStudySchema,
 } from './studies.schema.js';
@@ -33,20 +34,33 @@ studiesRouter.post(
 );
 
 //스터디 목록 조회: GET /api/studies
-studiesRouter.get('/', async (req, res, next) => {
-  try {
-    const studies = await studyRepository.findAll({
-      emojis: {
-        orderBy: {
-          count: 'desc',
+studiesRouter.get(
+  '/',
+  validate('query', findStudySchema),
+  async (req, res, next) => {
+    try {
+      const { q, cursor, limit, orderBy } = req.query;
+
+      const studies = await studyRepository.findAll(
+        { q, cursor, limit, orderBy },
+        {
+          emojis: {
+            orderBy: {
+              count: 'desc',
+            },
+          },
         },
-      },
-    });
-    res.status(HTTP_STATUS.OK).json(studies);
-  } catch (error) {
-    next(error);
-  }
-});
+      );
+
+      const nextCursor =
+        studies.length === limit ? studies[studies.length - 1].id : null;
+
+      res.status(HTTP_STATUS.OK).json({ data: studies, nextCursor });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 //특정 스터디 조회: GET /api/studies/{studyId}
 studiesRouter.get(

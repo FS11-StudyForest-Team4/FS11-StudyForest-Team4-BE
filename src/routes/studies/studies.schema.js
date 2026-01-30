@@ -17,6 +17,25 @@ export const idParamSchema = z.object({
   }),
 });
 
+//스터디 조회 스키마 - 검색과 정렬이 가능한 페이지네이션
+export const findStudySchema = z.object({
+  //페이지네이션 스키마
+  cursor: z
+    .ulid({
+      message: 'ID 형식이 올바르지 않습니다.',
+    })
+    .optional(), //최초 호출 시 커서 없음
+  limit: z.coerce.number().int().positive().max(100).default(6),
+
+  //검색 쿼리 스키마
+  q: z.string().optional(),
+
+  //정렬 스키마
+  orderBy: z
+    .enum(['LATEST', 'OLDEST', 'MOST_POINTS', 'LEAST_POINTS'])
+    .default('LATEST'),
+});
+
 //스터디 생성 스키마
 export const createStudySchema = z.object({
   password: z.string().min(4, '비밀번호는 4자리 이상이어야 합니다.'), //비밀번호 4자리 이상 조건 임의로 달았슴다.
