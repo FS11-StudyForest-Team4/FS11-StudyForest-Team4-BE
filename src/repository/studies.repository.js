@@ -52,7 +52,11 @@ function pagination({ cursor, limit = 6, orderBy }) {
 //스터디 목록 조회
 function findAll({ q, cursor, limit = 6, orderBy } = {}, include = null) {
   const searchResult = search(q);
-  const paginationResult = pagination({ cursor, limit, orderBy });
+  const paginationResult = pagination({
+    cursor,
+    limit: Number(limit), //limit 자료형 문제 해결을 위해 강제 형변환
+    orderBy,
+  });
   return prisma.study.findMany({
     where: searchResult, //검색 기능
     ...paginationResult, //페이지네이션 기능

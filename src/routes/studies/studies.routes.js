@@ -52,9 +52,10 @@ studiesRouter.get(
         },
       );
 
-      const nextCursor =
-        studies.length === limit ? studies[studies.length - 1].id : null;
+      const limitNum = Number(req.query.limit) || 6; //limit을 숫자로 지정
+      const lastStudy = studies[studies.length - 1]; //cursor 지정할 스터디 결정
 
+      const nextCursor = studies.length >= limitNum ? lastStudy.id : null; //다음 cursor 반환
       res.status(HTTP_STATUS.OK).json({ data: studies, nextCursor });
     } catch (error) {
       next(error);
