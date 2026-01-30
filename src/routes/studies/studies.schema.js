@@ -1,15 +1,5 @@
 import { z } from 'zod';
 
-//스터디 수정 스키마 커스텀
-const optionalStringSchema = (minLen, errorMessage) =>
-  z
-    .string()
-    .transform((v) => (v === '' ? undefined : v))
-    .optional()
-    .refine((v) => v === undefined || v.length >= minLen, {
-      message: errorMessage,
-    });
-
 //PK 검증 스키마
 export const idParamSchema = z.object({
   id: z.ulid({
@@ -54,3 +44,22 @@ export const updateStudySchema = z.object({
     ])
     .optional(),
 });
+
+//스터디 수정 스키마 커스텀
+const optionalStringSchema = (minLen, errorMessage) =>
+  z
+    .string()
+    .transform((v) => (v === '' ? undefined : v))
+    .optional()
+    .refine((v) => v === undefined || v.length >= minLen, {
+      message: errorMessage,
+    });
+
+// 습관 생성 스키마
+export const createHabitSchema = z.object({
+  name: z.string().min(1, '습관이름은 필수입니다.'),
+});
+
+export const habitlogQuerySchema = z.object({
+  startOfWeek: z.iso.date('startOfWeek 날짜형식은 YYYY-MM-DD 여야 합니다.'),
+})
