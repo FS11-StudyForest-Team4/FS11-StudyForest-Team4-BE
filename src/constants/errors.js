@@ -4,6 +4,7 @@ export const PRISMA_ERROR = {
   RECORD_NOT_FOUND: 'P2025', // 레코드를 찾을 수 없음
 };
 
+
 // 에러 메시지 상수
 export const ERROR_MESSAGE = {
   
