@@ -10,6 +10,7 @@ const ORDER = {
 
 //검색 기능
 function search(q) {
+  if (!q || q.trim() === '') return {};
   return {
     OR: [
       {
@@ -49,11 +50,11 @@ function pagination({ cursor, limit = 6, orderBy }) {
 }
 
 //스터디 목록 조회
-function findAll({ q, cursor, limit = 6, orderBy }, include = null) {
-  const serchResult = search(q);
-  const paginationResult = pagination(cursor, limit, orderBy);
+function findAll({ q, cursor, limit = 6, orderBy } = {}, include = null) {
+  const searchResult = search(q);
+  const paginationResult = pagination({ cursor, limit, orderBy });
   return prisma.study.findMany({
-    where: serchResult, //검색 기능
+    where: searchResult, //검색 기능
     ...paginationResult, //페이지네이션 기능
     ...(include && { include }),
   });
