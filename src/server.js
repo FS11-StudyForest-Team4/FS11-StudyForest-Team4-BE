@@ -1,11 +1,10 @@
-import express from "express";
-import { prisma } from "#db/prisma.js";
-import { config } from "#config";
+import express from 'express';
+import { prisma } from '#db/prisma.js';
+import { config } from '#config';
 import { router as apiRouter } from './routes/index.js';
-import { cors } from "./middlewares/cors.middleware.js";
-import { setupGracefulShutdown } from "./utils/graceful-shutdown.util.js";
-import { errorHandler } from "#middlewares";
-
+import { cors } from './middlewares/cors.middleware.js';
+import { setupGracefulShutdown } from './utils/graceful-shutdown.util.js';
+import { errorHandler } from '#middlewares';
 
 const app = express();
 

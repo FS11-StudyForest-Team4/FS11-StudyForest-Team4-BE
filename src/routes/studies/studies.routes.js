@@ -1,17 +1,126 @@
-import { habitlogRepository, habitRepository } from '#repository';
 import express from 'express';
+import { habitlogRepository, habitRepository, studyRepository } from '#repository';
 import { HTTP_STATUS, ERROR_MESSAGE } from '#constants';
-import { validate } from '#middlewares';
+import { /*authMiddleware,*/ validate } from '#middlewares';
+import {
+  createHabitSchema,
+  habitlogQuerySchema,
+  createStudySchema,
+  idParamSchema,
+  updateStudySchema,
+} from './studies.schema.js';
 import { NotFoundException } from '#exceptions';
-import { createHabitSchema, habitlogQuerySchema, studyIdParamSchema } from './studies.schema.js';
-import { studyRepository } from '../../repository/studies.repository.js';
 
 export const studiesRouter = express.Router();
+
+//스터디 생성:POST /api/studies
+studiesRouter.post(
+  '/',
+  validate('body', createStudySchema),
+  async (req, res, next) => {
+    try {
+      const { password, title, description, nickName, background } = req.body;
+      const newStudy = await studyRepository.create({
+        password,
+        title,
+        description,
+        nickName,
+        background,
+      });
+      res.status(HTTP_STATUS.CREATED).json(newStudy);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+//스터디 목록 조회: GET /api/studies
+studiesRouter.get('/', async (req, res, next) => {
+  try {
+    const studies = await studyRepository.findList();
+    res.status(HTTP_STATUS.OK).json(studies);
+  } catch (error) {
+    next(error);
+  }
+});
+
+//특정 스터디 조회: GET /api/studies/{studyId}
+studiesRouter.get(
+  '/:id',
+  validate('params', idParamSchema),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const study = await studyRepository.findById(id);
+      if (!study) {
+        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
+      }
+      res.status(HTTP_STATUS.OK).json(study);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+//특정 스터디 수정: PATCH /api/studies/{studyId}
+studiesRouter.patch(
+  '/:id',
+  // authMiddleware,
+  validate('params', idParamSchema),
+  validate('body', updateStudySchema),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { password, title, description, nickName, background } = req.body;
+
+      const study = await studyRepository.findById(id);
+      if (!study) {
+        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
+      }
+
+      const updatedStudy = await studyRepository.edit(id, {
+        password,
+        title,
+        description,
+        nickName,
+        background,
+      });
+
+      res.status(HTTP_STATUS.OK).json(updatedStudy);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+//특정 스터디 삭제: DELETE /api/studies/{studyId}
+studiesRouter.delete(
+  '/:id',
+  // authMiddleware,
+  validate('params', idParamSchema),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const study = await studyRepository.findById(id);
+      if (!study) {
+        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
+      }
+
+      const deletedStudy = await studyRepository.remove(id);
+
+      res
+        .status(HTTP_STATUS.NO_CONTENT)
+        .json({ message: '스터디가 삭제되었습니다.', ...deletedStudy });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 // GET /studies/:studyId/habitlogs - 습관기록표 조회
 studiesRouter.get(
   '/:studyId/habitlogs',
-  validate('params', studyIdParamSchema),
+  validate('params', idParamSchema),
   validate('query', habitlogQuerySchema),
   async (req, res, next) => {
     try {
@@ -19,10 +128,6 @@ studiesRouter.get(
       const { startOfWeek } = req.query;
 
       const study = await studyRepository.findStudyById(studyId);
-      if (!study) {
-        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
-      }
-
       const habitlogs = await habitlogRepository.findHabitlogs(
         startOfWeek,
       );
@@ -33,13 +138,11 @@ studiesRouter.get(
   },
 );
 
-
-
 //POST /studies/:studyId/habits - 습관 등록
 studiesRouter.post(
   '/:studyId/habits',
   validate('body', createHabitSchema),
-  validate('params', studyIdParamSchema),
+  validate('params', idParamSchema),
   async (req, res, next) => {
     try {
       const { name } = req.body;
@@ -61,7 +164,7 @@ studiesRouter.post(
 //GET /studies/:studyId/habits - 습관 목록 조회
 studiesRouter.get(
   '/:studyId/habits',
-  validate('params', studyIdParamSchema),
+  validate('params', idParamSchema),
   async (req, res, next) => {
     try {
       const { studyId } = req.params;

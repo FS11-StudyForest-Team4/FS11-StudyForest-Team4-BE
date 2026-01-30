@@ -15,21 +15,15 @@ function findStudyList(include = null) {
 }
 
 //특정 스터디 조회
-function findStudyById(id, include = null) {
+function findById(id, include = null) {
   return prisma.study.findUnique({
     where: { id: id },
     ...(include && { include }),
   });
 }
 
-// function findStudyById(id) {
-//   return prisma.study.findUnique({
-//     where: { id },
-//   });
-// }
-
 //특정 스터디 수정
-function updateStudy(id, data) {
+function edit(id, data) {
   return prisma.study.update({
     where: { id: id },
     data,
@@ -37,18 +31,16 @@ function updateStudy(id, data) {
 }
 
 //특정 스터디 삭제
-function deleteStudy(id) {
+function remove(id) {
   return prisma.study.delete({
     where: { id: id },
   });
 }
 
 export const studyRepository = {
-  createStudy,
-  findStudyList,
-  findStudyById,
-  updateStudy,
-  deleteStudy,
+  create,
+  findList,
+  findById,
+  edit,
+  remove,
 };
-//studyid확인 절차 필요해서 임시로 만듬
-// 특정 스터디 조회
