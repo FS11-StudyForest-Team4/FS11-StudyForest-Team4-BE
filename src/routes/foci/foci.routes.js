@@ -56,7 +56,7 @@ fociRouter.patch('/:focusId', async (req, res, next) => {
 
     res.status(HTTP_STATUS.OK).json(result);
   } catch (error) {
-    console.error('errror: ', error);
+    console.error('error: ', error);
     next(error);
   }
 });
