@@ -1,9 +1,10 @@
 import express from 'express';
 import { prisma } from '#db/prisma.js';
 import { config } from '#config';
+import { router as apiRouter } from './routes/index.js';
 import { cors } from './middlewares/cors.middleware.js';
 import { setupGracefulShutdown } from './utils/graceful-shutdown.util.js';
-import { router as apiRouter } from './routes/index.js';
+import { errorHandler } from '#middlewares';
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(cors);
 //API 라우터 등록
 app.use('/api', apiRouter);
 
-// app.use(errorHandler);
+app.use(errorHandler);
 
 const server = app.listen(config.PORT, () => {
   console.log(

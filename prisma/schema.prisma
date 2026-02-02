@@ -25,17 +25,16 @@ enum Status {
   PAUSED
 }
 
-
 model Study {
-  id          String   @id @default(ulid())
+  id          String     @id @default(ulid())
   password    String
   title       String
   description String
   nickName    String
   background  Background
-  totalPoint  Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  totalPoint  Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   habits Habit[]
   emojis Emoji[]
@@ -46,6 +45,8 @@ model Habit {
   id        String  @id @default(ulid())
   name      String
   isDeleted Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   studyId String
   study   Study  @relation(fields: [studyId], references: [id], onDelete: Cascade)
@@ -63,7 +64,7 @@ model Habitlog {
 
 model Emoji {
   id    String @id @default(ulid())
-  name  String 
+  name  String
   count Int
 
   studyId String
@@ -80,5 +81,5 @@ model Focus {
   updatedAt DateTime @updatedAt
 
   studyId String
-  study   Study  @relation(fields: [studyId], references: [id])
+  study   Study  @relation(fields: [studyId], references: [id], onDelete: Cascade)
 }
