@@ -1,14 +1,14 @@
 import { prisma } from '#db/prisma.js';
 
 //스터디 생성
-function createStudy(data) {
+function create(data) {
   return prisma.study.create({
     data,
   });
 }
 
 //스터디 목록 조회
-function findStudyList(include = null) {
+function findList(include = null) {
   return prisma.study.findMany({
     ...(include && { include }),
   });

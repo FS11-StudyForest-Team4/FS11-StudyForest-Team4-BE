@@ -6,7 +6,7 @@ import { NotFoundException } from '#exceptions';
 export const fociRouter = express.Router();
 
 // GET /focus/:studyId
-fociRouter.get('/focus/:studyId', async (req, res, next) => {
+fociRouter.get('/:studyId', async (req, res, next) => {
   try {
     const { studyId } = req.params;
 
@@ -27,7 +27,7 @@ fociRouter.get('/focus/:studyId', async (req, res, next) => {
 });
 
 // POST /focus
-fociRouter.post('/focus', async (req, res, next) => {
+fociRouter.post('/', async (req, res, next) => {
   try {
     const { studyId } = req.body;
 
@@ -44,7 +44,7 @@ fociRouter.post('/focus', async (req, res, next) => {
 });
 
 // PATCH /focus/:focusId
-fociRouter.patch('/focus/:focusId', async (req, res, next) => {
+fociRouter.patch('/:focusId', async (req, res, next) => {
   try {
     const { focusId } = req.params;
 
@@ -56,7 +56,7 @@ fociRouter.patch('/focus/:focusId', async (req, res, next) => {
 
     res.status(HTTP_STATUS.OK).json(result);
   } catch (error) {
-    console.error('errro: ', error);
+    console.error('errror: ', error);
     next(error);
   }
 });

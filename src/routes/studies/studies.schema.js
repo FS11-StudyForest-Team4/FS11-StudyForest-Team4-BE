@@ -7,6 +7,15 @@ export const idParamSchema = z.object({
   }),
 });
 
+//스터디 수정 스키마 커스텀
+const optionalStringSchema = (minLen, errorMessage) =>
+  z
+    .string()
+    .transform((v) => (v === '' ? undefined : v))
+    .optional()
+    .refine((v) => v === undefined || v.length >= minLen, {
+      message: errorMessage,
+    });
 //스터디 생성 스키마
 export const createStudySchema = z.object({
   password: z.string().min(4, '비밀번호는 4자리 이상이어야 합니다.'), //비밀번호 4자리 이상 조건 임의로 달았슴다.
@@ -45,16 +54,6 @@ export const updateStudySchema = z.object({
     .optional(),
 });
 
-//스터디 수정 스키마 커스텀
-const optionalStringSchema = (minLen, errorMessage) =>
-  z
-    .string()
-    .transform((v) => (v === '' ? undefined : v))
-    .optional()
-    .refine((v) => v === undefined || v.length >= minLen, {
-      message: errorMessage,
-    });
-
 // 습관 생성 스키마
 export const createHabitSchema = z.object({
   name: z.string().min(1, '습관이름은 필수입니다.'),
@@ -62,4 +61,4 @@ export const createHabitSchema = z.object({
 
 export const habitlogQuerySchema = z.object({
   startOfWeek: z.iso.date('startOfWeek 날짜형식은 YYYY-MM-DD 여야 합니다.'),
-})
+});
