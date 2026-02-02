@@ -7,7 +7,6 @@ export const PRISMA_ERROR = {
 
 // 에러 메시지 상수
 export const ERROR_MESSAGE = {
-  
   //Study
   STUDY_NOT_FOUND: 'Study not found', //studyId 404 공통
   FAILED_TO_FETCH_STUDIES: 'Failed to fetch studies', //스터디 목록 조회 500
@@ -28,6 +27,8 @@ export const ERROR_MESSAGE = {
   FAILED_TO_DELETE_EMOJIS: 'Failed to delete emojis', //이모지 삭제 500
   EMOJI_REQUIRED: 'emoji is required', //이모지 생성/수정 400 - 이모지 필수값
   EMOJI_NOT_FOUND: 'emoji is no found',
+  FAILED_TO_FETCH_EMOJIS: 'Failed to fetch emojis', //이모지 조회 500
+  //이모지 생성/수정 400 - 이모지 필수값
 
   //비밀번호 확인(PRIVATE 진입 전)
   INVALID_CREDENTIALS: 'Invalid password', //비밀번호 불일치 401 공통(스터디 생성, 습관, 집중)
