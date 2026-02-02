@@ -3,8 +3,9 @@ export const cors = (req, res, next) => {
   const isProduction = process.env.NODE_ENV === 'production';
 
   const whiteList = [
-    'https://your-production-site.com',
-    'https://admin.your-site.com',
+    'http://localhost:5001'
+    // 'https://your-production-site.com',
+    // 'https://admin.your-site.com',
   ];
 
   const isAllowed = !isProduction || (origin && whiteList.includes(origin));
