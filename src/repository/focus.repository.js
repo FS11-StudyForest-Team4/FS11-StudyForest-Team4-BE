@@ -123,6 +123,7 @@ export const focusRepository = {
   create,
   complete,
   findRunningByStudyId,
+  cancel,
   pause,
   resume,
 };
