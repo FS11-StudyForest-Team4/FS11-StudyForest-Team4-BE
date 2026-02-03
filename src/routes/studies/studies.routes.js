@@ -14,7 +14,7 @@ import {
   idParamSchema,
   updateStudySchema,
 } from './studies.schema.js';
-import { NotFoundException } from '#exceptions';
+import { ForbiddenException, NotFoundException } from '#exceptions';
 
 export const studiesRouter = express.Router();
 
@@ -155,8 +155,13 @@ studiesRouter.delete(
       if (!study) {
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
       }
-      await studyRepository.remove(id);
-      res.status(HTTP_STATUS.NO_CONTENT).send();
+
+      const deletedStudy = await studyRepository.remove(id);
+
+      //204 send로 바꾸었었는데 메세지 포함하여 200으로 다시 바꿈
+      res
+        .status(HTTP_STATUS.OK)
+        .json({ message: `${deletedStudy.nickName}의 ${deletedStudy.title}스터디가 삭제되었습니다.` });
     } catch (error) {
       next(error);
     }
