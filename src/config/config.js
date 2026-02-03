@@ -10,6 +10,8 @@ const envSchema = z.object({
     .max(65535)
     .default(5001),
   DATABASE_URL: z.url(),
+  JWT_ACCESS_SECRET: z.string().min(32),
+  JWT_REFRESH_SECRET: z.string().min(32),
 });
 
 const parseEnvironment = () => {
@@ -18,6 +20,8 @@ const parseEnvironment = () => {
       NODE_ENV: process.env.NODE_ENV,
       PORT: process.env.PORT,
       DATABASE_URL: process.env.DATABASE_URL,
+      JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
+      JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
