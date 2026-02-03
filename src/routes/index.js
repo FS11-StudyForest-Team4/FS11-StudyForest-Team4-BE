@@ -24,4 +24,4 @@ router.use('/emojis', emojiRouter);
 router.use('/focus', focusRouter);
 
 // /auth 경로(모달) auth router 연결
-router.use('/verify', authRouter);
+router.use('/auth', authRouter);
