@@ -10,8 +10,9 @@ import {
 } from '#utils';
 import { validate } from '#middlewares';
 import { HTTP_STATUS, ERROR_MESSAGE } from '#constants';
-import { signUpSchema, loginSchema } from './auth.schemas.js';
+import { signUpSchema, loginSchema } from './auth.schema.js';
 import { UnauthorizedException } from '#exceptions';
+import { idParamSchema } from './auth.schema.js';
 
 export const authRouter = express.Router();
 
@@ -43,15 +44,17 @@ authRouter.post(
   },
 );
 
-// /studies/{studyId}/verify -> studies.route로 들어갈 예정입니다.
+// /auth/{studyId}/verify -> studies.route로 들어갈 예정입니다.
 authRouter.post(
-  '/verify',
+  '/:id/verify',
   validate('body', loginSchema),
+  validate('params', idParamSchema),
   async (req, res, next) => {
     try {
-      const { id, password } = req.body;
+      const { id: studyId } = req.params;
+      const { password } = req.body;
 
-      const study = await studyRepository.findById(id);
+      const study = await studyRepository.findById(studyId);
 
       if (!study) {
         return res.status(HTTP_STATUS.UNAUTHORIZED).json({
@@ -61,7 +64,7 @@ authRouter.post(
 
       const isPasswordValid = await comparePassword(password, study.password);
 
-      if (!isPasswordValid) {
+      if (isPasswordValid) {
         throw new UnauthorizedException(ERROR_MESSAGE.INVALID_CREDENTIALS);
       }
 

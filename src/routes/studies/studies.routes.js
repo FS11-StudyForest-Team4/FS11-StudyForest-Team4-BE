@@ -141,9 +141,9 @@ studiesRouter.delete(
       const deletedStudy = await studyRepository.remove(id);
 
       //204 send로 바꾸었었는데 메세지 포함하여 200으로 다시 바꿈
-      res
-        .status(HTTP_STATUS.OK)
-        .json({ message: `${deletedStudy.nickName}의 ${deletedStudy.title}스터디가 삭제되었습니다.` });
+      res.status(HTTP_STATUS.OK).json({
+        message: `${deletedStudy.nickName}의 ${deletedStudy.title}스터디가 삭제되었습니다.`,
+      });
     } catch (error) {
       next(error);
     }
@@ -161,9 +161,7 @@ studiesRouter.get(
       const { startOfWeek } = req.query;
 
       const study = await studyRepository.findStudyById(studyId);
-      const habitlogs = await habitlogRepository.findHabitlogs(
-        startOfWeek,
-      );
+      const habitlogs = await habitlogRepository.findHabitlogs(startOfWeek);
       res.status(HTTP_STATUS.OK).json(habitlogs);
     } catch (error) {
       next(error);
@@ -196,12 +194,12 @@ studiesRouter.post(
 
 //GET /studies/:studyId/habits - 습관 목록 조회
 studiesRouter.get(
-  '/:studyId/habits',
+  '/:id/habits',
   validate('params', idParamSchema),
   async (req, res, next) => {
     try {
-      const { studyId } = req.params;
-      const study = await studyRepository.findStudyById(studyId);
+      const { id: studyId } = req.params;
+      const study = await studyRepository.findById(studyId);
       if (!study) {
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
       }
