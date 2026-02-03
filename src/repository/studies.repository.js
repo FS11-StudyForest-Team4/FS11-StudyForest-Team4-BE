@@ -1,5 +1,5 @@
 import { prisma } from '#db/prisma.js';
-import { hashPassword } from '#utils';
+import { comparePassword, hashPassword } from '#utils';
 
 //정렬 조건 상수
 const ORDER = {
@@ -14,6 +14,18 @@ const makeSecureData = async (data) => {
   if (!data.password) return data;
   //req body 중 password 있는 경우 hash
   return { ...data, password: await hashPassword(data.password) };
+};
+
+//비밀번호 검증
+const verifyPassword = async (id, password) => {
+  //스터디가 없는 경우 return null
+  const study = await findById(id);
+  if (!study) return null;
+  //비밀번호가 없는 경우 return null
+  const matchPassword = await comparePassword(password, study.password);
+  if (!matchPassword) return null;
+  
+  return study;
 };
 
 //검색 기능
@@ -106,6 +118,7 @@ function remove(id) {
 }
 
 export const studyRepository = {
+  verifyPassword,
   create,
   findAll,
   findById,
