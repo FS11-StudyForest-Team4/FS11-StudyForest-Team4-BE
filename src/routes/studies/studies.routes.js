@@ -69,6 +69,74 @@ studiesRouter.get(
   },
 );
 
+//라우터 우선순위로 인해 위로 배치
+// GET /studies/{studyId}/habitlogs - 습관기록표 조회
+studiesRouter.get(
+  '/:id/habitlogs',
+  validate('params', idParamSchema),
+  validate('query', habitlogQuerySchema),
+  async (req, res, next) => {
+    try {
+      const { id: studyId } = req.params;
+      const { startOfWeek } = req.query;
+
+      const study = await studyRepository.findById(studyId);
+      if (!study) {
+        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
+      }
+      const habitlogs = await habitlogRepository.findHabitlogs(
+        studyId,
+        startOfWeek,
+      );
+      res.status(HTTP_STATUS.OK).json(habitlogs);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+//POST /studies/{studyId}/habits - 습관 등록
+studiesRouter.post(
+  '/:id/habits',
+  validate('body', createHabitSchema),
+  validate('params', idParamSchema),
+  async (req, res, next) => {
+    try {
+      const { name } = req.body;
+      const { id: studyId } = req.params;
+      const study = await studyRepository.findById(studyId);
+      if (!study) {
+        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
+      }
+      const newHabit = await habitRepository.create(studyId, {
+        name,
+      });
+      res.status(HTTP_STATUS.CREATED).json(newHabit);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+//GET /studies/{studyId}/habits - 습관 목록 조회
+studiesRouter.get(
+  '/:id/habits',
+  validate('params', idParamSchema),
+  async (req, res, next) => {
+    try {
+      const { id: studyId } = req.params;
+      const study = await studyRepository.findById(studyId);
+      if (!study) {
+        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
+      }
+      const result = await habitRepository.findHabitsForStudy(studyId);
+      res.status(HTTP_STATUS.OK).json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
 //특정 스터디 조회: GET /api/studies/{studyId}
 studiesRouter.get(
   '/:id',
@@ -139,67 +207,6 @@ studiesRouter.delete(
       }
       await studyRepository.remove(id);
       res.status(HTTP_STATUS.NO_CONTENT).send();
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
-// GET /studies/:studyId/habitlogs - 습관기록표 조회
-studiesRouter.get(
-  '/:studyId/habitlogs',
-  validate('params', idParamSchema),
-  validate('query', habitlogQuerySchema),
-  async (req, res, next) => {
-    try {
-      const { studyId } = req.params;
-      const { startOfWeek } = req.query;
-
-      const study = await studyRepository.findStudyById(studyId);
-      const habitlogs = await habitlogRepository.findHabitlogs(startOfWeek);
-      res.status(HTTP_STATUS.OK).json(habitlogs);
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
-//POST /studies/:studyId/habits - 습관 등록
-studiesRouter.post(
-  '/:id/habits',
-  validate('body', createHabitSchema),
-  validate('params', idParamSchema),
-  async (req, res, next) => {
-    try {
-      const { name } = req.body;
-      const { id: studyId } = req.params;
-      const study = await studyRepository.findById(studyId);
-      if (!study) {
-        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
-      }
-      const newHabit = await habitRepository.create(studyId, {
-        name,
-      });
-      res.status(HTTP_STATUS.CREATED).json(newHabit);
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
-//GET /studies/:studyId/habits - 습관 목록 조회
-studiesRouter.get(
-  '/:id/habits',
-  validate('params', idParamSchema),
-  async (req, res, next) => {
-    try {
-      const { id: studyId } = req.params;
-      const study = await studyRepository.findById(studyId);
-      if (!study) {
-        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
-      }
-      const result = await habitRepository.findHabitsForStudy(studyId);
-      res.status(HTTP_STATUS.OK).json(result);
     } catch (error) {
       next(error);
     }
