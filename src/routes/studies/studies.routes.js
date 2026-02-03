@@ -45,7 +45,7 @@ studiesRouter.post(
       //비밀번호를 제외한 데이터 response
       const { password: _, ...studyWithoutPassword } = study;
       res.status(HTTP_STATUS.OK).json(studyWithoutPassword);
-    } catch (error) {
+      } catch (error) {
       next(error);
     }
   },
@@ -79,7 +79,6 @@ studiesRouter.get(
 //POST /studies/{studyId}/habits - 습관 등록
 studiesRouter.post(
   '/:id/habits',
-  authMiddleware,
   validate('body', createHabitSchema),
   validate('params', idParamSchema),
   async (req, res, next) => {
@@ -103,7 +102,6 @@ studiesRouter.post(
 //GET /studies/{studyId}/habits - 습관 목록 조회
 studiesRouter.get(
   '/:id/habits',
-  authMiddleware,
   validate('params', idParamSchema),
   async (req, res, next) => {
     try {
@@ -192,9 +190,9 @@ studiesRouter.delete(
       const deletedStudy = await studyRepository.remove(id);
 
       //204 send로 바꾸었었는데 메세지 포함하여 200으로 다시 바꿈
-      res.status(HTTP_STATUS.OK).json({
-        message: `${deletedStudy.nickName}의 ${deletedStudy.title}스터디가 삭제되었습니다.`,
-      });
+      res
+        .status(HTTP_STATUS.OK)
+        .json({ message: `${deletedStudy.nickName}의 ${deletedStudy.title}스터디가 삭제되었습니다.` });
     } catch (error) {
       next(error);
     }
@@ -253,3 +251,4 @@ studiesRouter.get(
     }
   },
 );
+

@@ -22,6 +22,7 @@
     "prod": "node --env-file=./env/.env.production src/server.js",
     "prisma:migrate": "dotenv -e ./env/.env.development -- npx prisma migrate dev",
     "prisma:migrate:reset": "dotenv -e ./env/.env.development -- npx prisma migrate reset",
+    "prisma:deploy": "dotenv -e ./env/.env.development -- npx prisma migrate deploy",
     "prisma:studio": "dotenv -e ./env/.env.development -- npx prisma studio",
     "seed": "node --env-file=./env/.env.development scripts/seed.js",
     "prisma:generate": "dotenv -e ./env/.env.development -- npx prisma generate",
