@@ -64,7 +64,7 @@ authRouter.post(
 
       const isPasswordValid = await comparePassword(password, study.password);
 
-      if (isPasswordValid) {
+      if (!isPasswordValid) {
         throw new UnauthorizedException(ERROR_MESSAGE.INVALID_CREDENTIALS);
       }
 
