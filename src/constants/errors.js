@@ -26,6 +26,8 @@ export const ERROR_MESSAGE = {
   FAILED_TO_DELETE_EMOJIS: 'Failed to delete emojis', //이모지 삭제 500
   EMOJI_REQUIRED: 'emoji is required', //이모지 생성/수정 400 - 이모지 필수값
   EMOJI_NOT_FOUND: 'emoji is no found',
+  FAILED_TO_FETCH_EMOJIS: 'Failed to fetch emojis', //이모지 조회 500
+  //이모지 생성/수정 400 - 이모지 필수값
 
   // 습관
   FAILED_TO_CREATE_HABIT: 'Failed to create habit', //습관 생성 500
