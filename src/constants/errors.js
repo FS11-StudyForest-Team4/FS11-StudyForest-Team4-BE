@@ -4,10 +4,8 @@ export const PRISMA_ERROR = {
   RECORD_NOT_FOUND: 'P2025', // 레코드를 찾을 수 없음
 };
 
-
 // 에러 메시지 상수
 export const ERROR_MESSAGE = {
-  
   //Study
   STUDY_NOT_FOUND: 'Study not found', //studyId 404 공통
   FAILED_TO_FETCH_STUDIES: 'Failed to fetch studies', //스터디 목록 조회 500
@@ -28,10 +26,6 @@ export const ERROR_MESSAGE = {
   FAILED_TO_DELETE_EMOJIS: 'Failed to delete emojis', //이모지 삭제 500
   EMOJI_REQUIRED: 'emoji is required', //이모지 생성/수정 400 - 이모지 필수값
   EMOJI_NOT_FOUND: 'emoji is no found',
-
-  //비밀번호 확인(PRIVATE 진입 전)
-  INVALID_CREDENTIALS: 'Invalid password', //비밀번호 불일치 401 공통(스터디 생성, 습관, 집중)
-  FAILED_TO_VERIFY: 'Failed to verify', //비밀번호 불일치 500
 
   // 습관
   FAILED_TO_CREATE_HABIT: 'Failed to create habit', //습관 생성 500
@@ -55,6 +49,9 @@ export const ERROR_MESSAGE = {
   INVALID_TOKEN: 'Invalid or expired token',
   USER_NOT_FOUND_FROM_TOKEN: 'User not found from token',
   AUTH_FAILED: 'Authentication failed',
+  //비밀번호 확인(PRIVATE 진입 전)
+  INVALID_CREDENTIALS: 'Invalid password', //비밀번호 불일치 401 공통(스터디 생성, 습관, 집중)
+  FAILED_TO_VERIFY: 'Failed to verify', //비밀번호 불일치 500
 
   // Validation (범용: 전체 바디, 인자, 쿼리)
   INVALID_INPUT: 'Invalid input',

@@ -1,5 +1,9 @@
 import express from 'express';
-import { habitlogRepository, habitRepository, studyRepository } from '#repository';
+import {
+  habitlogRepository,
+  habitRepository,
+  studyRepository,
+} from '#repository';
 import { HTTP_STATUS, ERROR_MESSAGE } from '#constants';
 import { /*authMiddleware,*/ validate } from '#middlewares';
 import {
@@ -9,7 +13,7 @@ import {
   idParamSchema,
   updateStudySchema,
 } from './studies.schema.js';
-import { NotFoundException } from '#exceptions';
+import { ForbiddenException, NotFoundException } from '#exceptions';
 
 export const studiesRouter = express.Router();
 
@@ -37,7 +41,7 @@ studiesRouter.post(
 //스터디 목록 조회: GET /api/studies
 studiesRouter.get('/', async (req, res, next) => {
   try {
-    const studies = await studyRepository.findList();
+    const studies = await studyRepository.findAll();
     res.status(HTTP_STATUS.OK).json(studies);
   } catch (error) {
     next(error);
@@ -108,9 +112,10 @@ studiesRouter.delete(
 
       const deletedStudy = await studyRepository.remove(id);
 
+      //204 send로 바꾸었었는데 메세지 보내고 싶어서 200으로 다시 바꿈
       res
-        .status(HTTP_STATUS.NO_CONTENT)
-        .json({ message: '스터디가 삭제되었습니다.', ...deletedStudy });
+        .status(HTTP_STATUS.OK)
+        .json({ message: `${deletedStudy.nickName}의 ${deletedStudy.title}스터디가 삭제되었습니다.` });
     } catch (error) {
       next(error);
     }
