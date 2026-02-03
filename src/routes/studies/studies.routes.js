@@ -15,9 +15,7 @@ import {
   updateStudySchema,
   authSchema,
 } from './studies.schema.js';
-import {
-  NotFoundException,
-} from '#exceptions';
+import { NotFoundException } from '#exceptions';
 import { generateTokens, setAuthCookies } from '#utils';
 
 export const studiesRouter = express.Router();
@@ -236,10 +234,10 @@ studiesRouter.get(
   validate('query', findStudySchema),
   async (req, res, next) => {
     try {
-      const { q, cursor, limit, orderBy } = req.query;
+      const { q: keyword, cursor, limit, orderBy } = req.query;
 
       const studies = await studyRepository.findAll(
-        { q, cursor, limit, orderBy },
+        { keyword, cursor, limit, orderBy },
         {
           emojis: {
             orderBy: {
@@ -249,11 +247,7 @@ studiesRouter.get(
         },
       );
 
-      const limitNum = Number(req.query.limit) || 6; //limit을 숫자로 지정
-      const lastStudy = studies[studies.length - 1]; //cursor 지정할 스터디 결정
-
-      const nextCursor = studies.length >= limitNum ? lastStudy.id : null; //다음 cursor 반환
-      res.status(HTTP_STATUS.OK).json({ data: studies, nextCursor });
+      res.status(HTTP_STATUS.OK).json(studies);
     } catch (error) {
       next(error);
     }

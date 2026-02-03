@@ -24,7 +24,7 @@ const verifyPassword = async (id, password) => {
   //비밀번호가 없는 경우 return null
   const matchPassword = await comparePassword(password, study.password);
   if (!matchPassword) return null;
-  
+
   return study;
 };
 
@@ -69,19 +69,37 @@ function pagination({ cursor, limit = 6, orderBy }) {
   };
 }
 
+const generateNextCursor = (limit, studies) => {
+  const checkNextPage = studies.length > limit;
+  const nextCursor = checkNextPage ? studies[limit - 1].id : null; //다음 cursor 반환
+
+  return { nextCursor, checkNextPage };
+};
+
 //스터디 목록 조회
-function findAll({ q, cursor, limit = 6, orderBy } = {}, include = null) {
-  const searchResult = search(q);
+async function findAll(
+  { q: keyword, cursor, limit = 6, orderBy } = {},
+  include = null,
+) {
+  const limitNum = Number(limit);
+  const searchResult = search(keyword);
   const paginationResult = pagination({
     cursor,
-    limit: Number(limit), //limit 자료형 문제 해결을 위해 강제 형변환
+    limit: limitNum + 1, //더보기 버튼 활성 사전 확인을 위해 +1
     orderBy,
   });
-  return prisma.study.findMany({
+
+  const rawData = await prisma.study.findMany({
     where: searchResult, //검색 기능
     ...paginationResult, //페이지네이션 기능
     ...(include && { include }),
   });
+
+  const { nextCursor, checkNextPage } = generateNextCursor(limit, rawData);
+
+  const data = checkNextPage ? rawData.slice(0, limitNum) : rawData;
+
+  return { data, nextCursor, checkNextPage };
 }
 
 //특정 스터디 조회
