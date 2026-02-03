@@ -18,51 +18,69 @@ import { NotFoundException } from '#exceptions';
 
 export const studiesRouter = express.Router();
 
-//스터디 생성:POST /api/studies
-studiesRouter.post(
-  '/',
-  validate('body', createStudySchema),
+//라우터 우선순위로 인해 위로 배치
+// GET /studies/{studyId}/habitlogs - 습관기록표 조회
+studiesRouter.get(
+  '/:id/habitlogs',
+  validate('params', idParamSchema),
+  validate('query', habitlogQuerySchema),
   async (req, res, next) => {
     try {
-      const { password, title, description, nickName, background } = req.body;
-      const newStudy = await studyRepository.create({
-        password,
-        title,
-        description,
-        nickName,
-        background,
-      });
-      res.status(HTTP_STATUS.CREATED).json(newStudy);
+      const { id: studyId } = req.params;
+      const { startOfWeek } = req.query;
+
+      const study = await studyRepository.findById(studyId);
+      if (!study) {
+        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
+      }
+      const habitlogs = await habitlogRepository.findHabitlogs(
+        studyId,
+        startOfWeek,
+      );
+      res.status(HTTP_STATUS.OK).json(habitlogs);
     } catch (error) {
       next(error);
     }
   },
 );
 
-//스터디 목록 조회: GET /api/studies
-studiesRouter.get(
-  '/',
-  validate('query', findStudySchema),
+
+//POST /studies/{studyId}/habits - 습관 등록
+studiesRouter.post(
+  '/:id/habits',
+  validate('body', createHabitSchema),
+  validate('params', idParamSchema),
   async (req, res, next) => {
     try {
-      const { q, cursor, limit, orderBy } = req.query;
+      const { name } = req.body;
+      const { id: studyId } = req.params;
+      const study = await studyRepository.findById(studyId);
+      if (!study) {
+        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
+      }
+      const newHabit = await habitRepository.create(studyId, {
+        name,
+      });
+      res.status(HTTP_STATUS.CREATED).json(newHabit);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
-      const studies = await studyRepository.findAll(
-        { q, cursor, limit, orderBy },
-        {
-          emojis: {
-            orderBy: {
-              count: 'desc',
-            },
-          },
-        },
-      );
-
-      const limitNum = Number(req.query.limit) || 6; //limit을 숫자로 지정
-      const lastStudy = studies[studies.length - 1]; //cursor 지정할 스터디 결정
-
-      const nextCursor = studies.length >= limitNum ? lastStudy.id : null; //다음 cursor 반환
-      res.status(HTTP_STATUS.OK).json({ data: studies, nextCursor });
+//GET /studies/{studyId}/habits - 습관 목록 조회
+studiesRouter.get(
+  '/:id/habits',
+  validate('params', idParamSchema),
+  async (req, res, next) => {
+    try {
+      const { id: studyId } = req.params;
+      const study = await studyRepository.findById(studyId);
+      if (!study) {
+        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
+      }
+      const result = await habitRepository.findHabitsForStudy(studyId);
+      res.status(HTTP_STATUS.OK).json(result);
     } catch (error) {
       next(error);
     }
@@ -145,63 +163,54 @@ studiesRouter.delete(
   },
 );
 
-// GET /studies/:studyId/habitlogs - 습관기록표 조회
-studiesRouter.get(
-  '/:studyId/habitlogs',
-  validate('params', idParamSchema),
-  validate('query', habitlogQuerySchema),
-  async (req, res, next) => {
-    try {
-      const { studyId } = req.params;
-      const { startOfWeek } = req.query;
-
-      const study = await studyRepository.findStudyById(studyId);
-      const habitlogs = await habitlogRepository.findHabitlogs(startOfWeek);
-      res.status(HTTP_STATUS.OK).json(habitlogs);
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
-//POST /studies/:studyId/habits - 습관 등록
+//스터디 생성:POST /api/studies
 studiesRouter.post(
-  '/:id/habits',
-  validate('body', createHabitSchema),
-  validate('params', idParamSchema),
+  '/',
+  validate('body', createStudySchema),
   async (req, res, next) => {
     try {
-      const { name } = req.body;
-      const { id: studyId } = req.params;
-      const study = await studyRepository.findById(studyId);
-      if (!study) {
-        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
-      }
-      const newHabit = await habitRepository.create(studyId, {
-        name,
+      const { password, title, description, nickName, background } = req.body;
+      const newStudy = await studyRepository.create({
+        password,
+        title,
+        description,
+        nickName,
+        background,
       });
-      res.status(HTTP_STATUS.CREATED).json(newHabit);
+      res.status(HTTP_STATUS.CREATED).json(newStudy);
     } catch (error) {
       next(error);
     }
   },
 );
 
-//GET /studies/:studyId/habits - 습관 목록 조회
+//스터디 목록 조회: GET /api/studies
 studiesRouter.get(
-  '/:id/habits',
-  validate('params', idParamSchema),
+  '/',
+  validate('query', findStudySchema),
   async (req, res, next) => {
     try {
-      const { id: studyId } = req.params;
-      const study = await studyRepository.findById(studyId);
-      if (!study) {
-        throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
-      }
-      const result = await habitRepository.findHabitsForStudy(studyId);
-      res.status(HTTP_STATUS.OK).json(result);
+      const { q, cursor, limit, orderBy } = req.query;
+
+      const studies = await studyRepository.findAll(
+        { q, cursor, limit, orderBy },
+        {
+          emojis: {
+            orderBy: {
+              count: 'desc',
+            },
+          },
+        },
+      );
+
+      const limitNum = Number(req.query.limit) || 6; //limit을 숫자로 지정
+      const lastStudy = studies[studies.length - 1]; //cursor 지정할 스터디 결정
+
+      const nextCursor = studies.length >= limitNum ? lastStudy.id : null; //다음 cursor 반환
+      res.status(HTTP_STATUS.OK).json({ data: studies, nextCursor });
     } catch (error) {
       next(error);
     }
   },
 );
+
