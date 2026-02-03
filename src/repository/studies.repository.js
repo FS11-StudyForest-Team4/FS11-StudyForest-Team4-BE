@@ -1,4 +1,5 @@
 import { prisma } from '#db/prisma.js';
+import { hashPassword } from '#utils';
 
 //정렬 조건 상수
 const ORDER = {
@@ -6,6 +7,13 @@ const ORDER = {
   OLDEST: [{ createdAt: 'asc' }, { id: 'asc' }],
   MOST_POINTS: [{ totalPoint: 'desc' }, { id: 'desc' }],
   LEAST_POINTS: [{ totalPoint: 'asc' }, { id: 'asc' }],
+};
+
+//스터디 생성 및 수정 비밀번호 해실
+const makeSecureData = async (data) => {
+  if (!data.password) return data;
+  //req body 중 password 있는 경우 hash
+  return { ...data, password: await hashPassword(data.password) };
 };
 
 //검색 기능
@@ -67,30 +75,33 @@ function findAll({ q, cursor, limit = 6, orderBy } = {}, include = null) {
 //특정 스터디 조회
 function findById(id, include = null) {
   return prisma.study.findUnique({
-    where: { id: id },
+    where: { id },
     ...(include && { include }),
   });
 }
 
 //스터디 생성
-function create(data) {
-  return prisma.study.create({
-    data,
-  });
+async function create(data) {
+  const secureData = await makeSecureData(data);
+
+  return prisma.study.create({ data: secureData });
 }
 
 //특정 스터디 수정
-function edit(id, data) {
+async function edit(id, data) {
+  //수정할 데이터 중 비밀번호가 포함된 경우 해싱
+  const secureData = await makeSecureData(data);
+
   return prisma.study.update({
-    where: { id: id },
-    data,
+    where: { id },
+    data: secureData,
   });
 }
 
 //특정 스터디 삭제
 function remove(id) {
   return prisma.study.delete({
-    where: { id: id },
+    where: { id },
   });
 }
 

@@ -15,6 +15,7 @@ import {
   updateStudySchema,
 } from './studies.schema.js';
 import { ForbiddenException, NotFoundException } from '#exceptions';
+import { generateTokens, setAuthCookies } from '#utils';
 
 export const studiesRouter = express.Router();
 
@@ -243,7 +244,13 @@ studiesRouter.post(
         nickName,
         background,
       });
-      res.status(HTTP_STATUS.CREATED).json(newStudy);
+
+      const tokens = generateTokens(newStudy);
+      setAuthCookies(res, tokens);
+
+      const { password: _, ...studyWithoutPassword } = newStudy;
+
+      res.status(HTTP_STATUS.CREATED).json(studyWithoutPassword);
     } catch (error) {
       next(error);
     }
