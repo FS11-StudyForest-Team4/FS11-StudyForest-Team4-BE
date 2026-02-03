@@ -1,5 +1,9 @@
 import express from 'express';
-import { habitlogRepository, habitRepository, studyRepository } from '#repository';
+import {
+  habitlogRepository,
+  habitRepository,
+  studyRepository,
+} from '#repository';
 import { HTTP_STATUS, ERROR_MESSAGE } from '#constants';
 import { /*authMiddleware,*/ validate } from '#middlewares';
 import {
@@ -152,9 +156,7 @@ studiesRouter.get(
       const { startOfWeek } = req.query;
 
       const study = await studyRepository.findStudyById(studyId);
-      const habitlogs = await habitlogRepository.findHabitlogs(
-        startOfWeek,
-      );
+      const habitlogs = await habitlogRepository.findHabitlogs(startOfWeek);
       res.status(HTTP_STATUS.OK).json(habitlogs);
     } catch (error) {
       next(error);
@@ -164,14 +166,14 @@ studiesRouter.get(
 
 //POST /studies/:studyId/habits - 습관 등록
 studiesRouter.post(
-  '/:studyId/habits',
+  '/:id/habits',
   validate('body', createHabitSchema),
   validate('params', idParamSchema),
   async (req, res, next) => {
     try {
       const { name } = req.body;
-      const { studyId } = req.params;
-      const study = await studyRepository.findStudyById(studyId);
+      const { id: studyId } = req.params;
+      const study = await studyRepository.findById(studyId);
       if (!study) {
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
       }
@@ -187,12 +189,12 @@ studiesRouter.post(
 
 //GET /studies/:studyId/habits - 습관 목록 조회
 studiesRouter.get(
-  '/:studyId/habits',
+  '/:id/habits',
   validate('params', idParamSchema),
   async (req, res, next) => {
     try {
-      const { studyId } = req.params;
-      const study = await studyRepository.findStudyById(studyId);
+      const { id: studyId } = req.params;
+      const study = await studyRepository.findById(studyId);
       if (!study) {
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
       }
