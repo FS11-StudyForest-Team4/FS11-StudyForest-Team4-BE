@@ -21,16 +21,15 @@ async function toggleHabitToday(habitId) {
     await prisma.habitlog.delete({
       where: { id: todayHabitlog.id },
     });
-    return false;
+  } else {
+    // 습관완료 없는 경우 로그 생성
+    await prisma.habitlog.create({
+      data: {
+        habitId,
+        createdAt: new Date(),
+      },
+    });
   }
-  // 습관완료 없는 경우 로그 생성
-  await prisma.habitlog.create({
-    data: {
-      habitId,
-      createdAt: new Date(),
-    },
-  });
-  return true;
 }
 
 // 습관기록 조회 - 특정날짜
