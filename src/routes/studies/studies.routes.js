@@ -24,15 +24,14 @@ export const studiesRouter = express.Router();
 // POST /studies/{studyId}/auth - 비밀번호 체크
 studiesRouter.post(
   '/:id/auth',
-  authMiddleware,
+  validate('params', idParamSchema),
   validate('body', authSchema),
-  validate('params', authSchema),
   async (req, res, next) => {
     try {
-      const { id: studyId } = req.params;
+      const { id } = req.params;
       const { password } = req.body;
 
-      const study = await studyRepository.verifyPassword(studyId, password);
+      const study = await studyRepository.verifyPassword(id, password);
       if (!study) {
         return res.status(HTTP_STATUS.UNAUTHORIZED).json({
           error: ERROR_MESSAGE.INVALID_CREDENTIALS,
@@ -45,7 +44,7 @@ studiesRouter.post(
       //비밀번호를 제외한 데이터 response
       const { password: _, ...studyWithoutPassword } = study;
       res.status(HTTP_STATUS.OK).json(studyWithoutPassword);
-      } catch (error) {
+    } catch (error) {
       next(error);
     }
   },
@@ -190,9 +189,9 @@ studiesRouter.delete(
       const deletedStudy = await studyRepository.remove(id);
 
       //204 send로 바꾸었었는데 메세지 포함하여 200으로 다시 바꿈
-      res
-        .status(HTTP_STATUS.OK)
-        .json({ message: `${deletedStudy.nickName}의 ${deletedStudy.title}스터디가 삭제되었습니다.` });
+      res.status(HTTP_STATUS.OK).json({
+        message: `${deletedStudy.nickName}의 ${deletedStudy.title}스터디가 삭제되었습니다.`,
+      });
     } catch (error) {
       next(error);
     }
@@ -251,4 +250,3 @@ studiesRouter.get(
     }
   },
 );
-
