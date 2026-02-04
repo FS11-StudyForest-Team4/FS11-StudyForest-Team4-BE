@@ -75,11 +75,6 @@ const resetDb = (prisma) =>
 // 스터디 시딩
 const seedStudies = async (prisma, count) => {
   const rawData = xs(count).map(makeStudyInputs);
-  
-  console.log('🔑 생성된 스터디 비밀번호 목록:');
-    rawData.forEach((study, index) => {
-      console.log(`[Study ${index + 1}] Title: ${study.title} | PW: ${study.password}`);
-    });
 
   const dataWithHashedPassword = await Promise.all(
     rawData.map(async (study) => ({
@@ -88,10 +83,20 @@ const seedStudies = async (prisma, count) => {
     })),
   );
 
-  return await prisma.study.createManyAndReturn({
+  const seedData = await prisma.study.createManyAndReturn({
     data: dataWithHashedPassword,
-    select: { id: true },
+    select: { id: true, password: true, title: true },
   });
+
+  console.log('\n🌱시딩 스터디 목록');
+  seedData.forEach((study, index) => {
+    const plainPassword = rawData[index].password;
+    console.log(`[Study ${index + 1}] ID: ${study.id} | Title: ${study.title}`);
+    console.log(`           └─ password: ${plainPassword}`);
+  });
+  console.log('--------------------------------------------\n');
+
+  return seedData; // 다음 시딩(습관 등)을 위해 리턴
 };
 
 // 스터디에 습관 시딩
@@ -160,7 +165,7 @@ async function main(prisma) {
   console.log('✅ 기존 데이터 삭제 완료');
 
   const studies = await seedStudies(prisma, NUM_STUDIES_TO_CREATE);
-  console.log(`✅ ${studies.length}의 스터디가 생성되었습니다`);
+  console.log(`✅ ${studies.length}개의 스터디가 생성되었습니다`);
 
   const habits = await seedHabits(prisma, studies);
   console.log(`✅ ${habits.length}개의 습관이 생성되었습니다`);
