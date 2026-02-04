@@ -9,7 +9,7 @@ export const generateAccessToken = (study) => {
     {
       studyId: study.id,
       title: study.title,
-      nickname: study.nickName,
+      nickName: study.nickName,
     },
     config.JWT_ACCESS_SECRET,
     {
