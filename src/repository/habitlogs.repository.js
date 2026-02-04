@@ -1,45 +1,30 @@
 import { prisma } from '#db/prisma.js';
+import { startOfWeekRange } from '#utils';
 
-// 오늘 습관 완료 토글 (토글이니까 data 안받기)
-async function toggleHabitToday(habitId) {
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  const endOfToday = new Date();
-  endOfToday.setHours(23, 59, 59, 999);
-  // 오늘 습관 조회
-  const todayHabitlog = await prisma.habitlog.findFirst({
+
+
+function findFirst(where) {
+  return prisma.habitlog.findFirst({
+    where,
+  });
+}
+
+function remove(id) {
+  return prisma.habitlog.delete({
     where: {
-      habitId,
-      createdAt: {
-        gte: startOfToday,
-        lte: endOfToday,
-      },
+      id,
     },
   });
-  // 습관완료 있는 경우 로그 삭제
-  if (todayHabitlog) {
-    await prisma.habitlog.delete({
-      where: { id: todayHabitlog.id },
-    });
-  } else {
-    // 습관완료 없는 경우 로그 생성
-    await prisma.habitlog.create({
-      data: {
-        habitId,
-        createdAt: new Date(),
-      },
-    });
-  }
+}
+
+function create(habitId) {
+  return prisma.habitlog.create({ data: { habitId } });
 }
 
 // 습관기록 조회 - 특정날짜
 function findHabitlogs(studyId, startOfWeek) {
-  const start = new Date(startOfWeek);
-  start.setHours(0, 0, 0, 0);
-
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  end.setHours(23, 59, 59, 999);
+ 
+  const {start, end } = startOfWeekRange(startOfWeek)
 
   return prisma.habitlog.findMany({
     where: {
@@ -62,7 +47,8 @@ function findHabitlogs(studyId, startOfWeek) {
 }
 
 export const habitlogRepository = {
-  // create,
-  toggleHabitToday,
+  findFirst,
+  remove,
+  create,
   findHabitlogs,
 };

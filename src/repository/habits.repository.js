@@ -1,4 +1,5 @@
 import { prisma } from '#db/prisma.js';
+import { todayTimeRange } from '#utils'
 
 // 습관 등록
 function create(studyId, data) {
@@ -34,11 +35,8 @@ function remove(id) {
 
 // 습관 목록 조회
 async function getTodayHabits(studyId) {
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0); 
-  const endOfToday = new Date();
-  endOfToday.setHours(23, 59, 59, 999); 
 
+  const { startOfToday, endOfToday } = todayTimeRange
   const habits = await prisma.habit.findMany({
     where: { studyId },
     include: {

@@ -4,6 +4,7 @@ import { HTTP_STATUS, ERROR_MESSAGE } from '#constants';
 import { validate } from '#middlewares';
 import { NotFoundException } from '#exceptions';
 import { habitIdParamSchema, updateHabitSchema } from './habits.schema.js';
+import { todayTimeRange } from '#utils';
 
 export const habitsRouter = express.Router();
 
@@ -63,8 +64,24 @@ habitsRouter.post(
       if (!habit) {
         throw new NotFoundException(ERROR_MESSAGE.HABIT_NOT_FOUND);
       }
-      const newHabitlog = await habitlogRepository.toggleHabitToday(habitId);
-      res.status(HTTP_STATUS.CREATED).json(newHabitlog);
+
+      const { startOfToday, endOfToday } = todayTimeRange;
+      const habitLog = await habitlogRepository.findFirst({
+        habitId,
+        createdAt: {
+          gte: startOfToday,
+          lte: endOfToday,
+        },
+      });
+      const shouldRemove = !!habitLog;
+
+      shouldRemove
+        ? await habitlogRepository.remove(habitLog.id)
+        : await habitlogRepository.create(habitId);
+
+      const isCompleted = shouldRemove ? false : true;
+
+      res.status(HTTP_STATUS.CREATED).json(isCompleted);
     } catch (error) {
       next(error);
     }
