@@ -16,11 +16,27 @@ import {
   authSchema,
 } from './studies.schema.js';
 import { NotFoundException } from '#exceptions';
-import { generateTokens, setAuthCookies } from '#utils';
+import { generateTokens, setAuthCookies, verifyToken } from '#utils';
 
 export const studiesRouter = express.Router();
 
 //라우터 우선순위로 인해 위로 배치
+// GET //studies/{studyId}/auth - 쿠키확인
+studiesRouter.get(
+  '/:id/auth',
+    async (req, res) => {
+      const token = req.cookies.accessToken;
+      const payload = verifyToken(token, 'access');
+
+      if (!payload) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({error: ERROR_MESSAGE.INVALID_CREDENTIALS})
+      }
+      //비밀번호를 제외한 데이터 response
+      const study = await studyRepository.findById(payload.studyId)
+      res.json(study);
+  },
+);
+
 // POST /studies/{studyId}/auth - 비밀번호 체크
 studiesRouter.post(
   '/:id/auth',
