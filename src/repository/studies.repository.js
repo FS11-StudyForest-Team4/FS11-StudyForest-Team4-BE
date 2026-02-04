@@ -67,6 +67,7 @@ function pagination({ cursor, limit = 6, orderBy }) {
     }),
     orderBy: order,
   };
+}
 
 const generateNextCursor = (limit, studies) => {
   const checkNextPage = studies.length > limit;
@@ -133,7 +134,7 @@ function remove(id) {
     where: { id },
   });
 }
-  
+
 export const studyRepository = {
   verifyPassword,
   create,
