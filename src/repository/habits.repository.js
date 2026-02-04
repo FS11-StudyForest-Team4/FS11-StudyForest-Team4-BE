@@ -1,4 +1,5 @@
 import { prisma } from '#db/prisma.js';
+import { todayTimeRange } from '#utils'
 
 // 습관 등록
 function create(studyId, data) {
@@ -33,16 +34,34 @@ function remove(id) {
 }
 
 // 습관 목록 조회
-function findHabitsForStudy(studyId) {
-  return prisma.habit.findMany({
+async function getTodayHabits(studyId) {
+
+  const { startOfToday, endOfToday } = todayTimeRange
+  const habits = await prisma.habit.findMany({
     where: { studyId },
+    include: {
+      habitlogs: {
+        where: {
+          createdAt: {
+            gte: startOfToday,
+            lte: endOfToday,
+          },
+        },
+      },
+    },
   });
+
+  return habits.map(({ habitlogs, ...habit }) => ({
+    ...habit,
+    isCompleted: habitlogs.length > 0, // 오늘 완료 여부
+  }));
 }
+
 
 export const habitRepository = {
   create,
   findById,
   update,
   remove,
-  findHabitsForStudy,
+  getTodayHabits,
 };

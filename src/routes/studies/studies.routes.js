@@ -105,11 +105,12 @@ studiesRouter.get(
   async (req, res, next) => {
     try {
       const { id: studyId } = req.params;
+      
       const study = await studyRepository.findById(studyId);
       if (!study) {
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
       }
-      const result = await habitRepository.findHabitsForStudy(studyId);
+      const result = await habitRepository.getTodayHabits(studyId);
       res.status(HTTP_STATUS.OK).json(result);
     } catch (error) {
       next(error);
