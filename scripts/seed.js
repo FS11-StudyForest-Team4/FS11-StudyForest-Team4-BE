@@ -5,6 +5,9 @@ import { hashPassword } from '#utils';
 
 const NUM_STUDIES_TO_CREATE = 10;
 
+const SEEDING_PASSWORD = 'password1234';
+const HASHED_PASSWORD = await hashPassword(SEEDING_PASSWORD);
+
 const EMOJIS = ['🔥', '👏', '🙌', '🎉', '❤️', '😊', '🚀', '💯', '📚', '🏆'];
 
 const BACKGROUNDS = [
@@ -24,7 +27,7 @@ const xs = (n) => Array.from({ length: n }, (_, i) => i + 1);
 
 // 스터디 데이터 생성 함수
 const makeStudyInputs = () => ({
-  password: faker.internet.password({ length: 8 }),
+  password: HASHED_PASSWORD,
   title: faker.lorem.sentence({ min: 3, max: 7 }),
   description: faker.lorem.paragraph({ min: 1, max: 3 }, '\n\n'),
   nickName: faker.internet.username(),
@@ -74,29 +77,12 @@ const resetDb = (prisma) =>
 
 // 스터디 시딩
 const seedStudies = async (prisma, count) => {
-  const rawData = xs(count).map(makeStudyInputs);
+  const data = xs(count).map(makeStudyInputs);
 
-  const dataWithHashedPassword = await Promise.all(
-    rawData.map(async (study) => ({
-      ...study,
-      password: await hashPassword(study.password),
-    })),
-  );
-
-  const seedData = await prisma.study.createManyAndReturn({
-    data: dataWithHashedPassword,
-    select: { id: true, password: true, title: true },
+  return await prisma.study.createManyAndReturn({
+    data,
+    select: { id: true },
   });
-
-  console.log('\n🌱시딩 스터디 목록');
-  seedData.forEach((study, index) => {
-    const plainPassword = rawData[index].password;
-    console.log(`[Study ${index + 1}] ID: ${study.id} | Title: ${study.title}`);
-    console.log(`           └─ password: ${plainPassword}`);
-  });
-  console.log('--------------------------------------------\n');
-
-  return seedData; // 다음 시딩(습관 등)을 위해 리턴
 };
 
 // 스터디에 습관 시딩
