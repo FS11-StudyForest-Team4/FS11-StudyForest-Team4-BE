@@ -63,7 +63,7 @@ habitsRouter.post(
       if (!habit) {
         throw new NotFoundException(ERROR_MESSAGE.HABIT_NOT_FOUND);
       }
-      const newHabitlog = await habitlogRepository.create(habitId);
+      const newHabitlog = await habitlogRepository.toggleHabitToday(habitId);
       res.status(HTTP_STATUS.CREATED).json(newHabitlog);
     } catch (error) {
       next(error);

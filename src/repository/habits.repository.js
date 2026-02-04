@@ -33,16 +33,37 @@ function remove(id) {
 }
 
 // 습관 목록 조회
-function findHabitsForStudy(studyId) {
-  return prisma.habit.findMany({
+async function getTodayHabits(studyId) {
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0); 
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999); 
+
+  const habits = await prisma.habit.findMany({
     where: { studyId },
+    include: {
+      habitlogs: {
+        where: {
+          createdAt: {
+            gte: startOfToday,
+            lte: endOfToday,
+          },
+        },
+      },
+    },
   });
+
+  return habits.map(({ habitlogs, ...habit }) => ({
+    ...habit,
+    isCompleted: habitlogs.length > 0, // 오늘 완료 여부
+  }));
 }
+
 
 export const habitRepository = {
   create,
   findById,
   update,
   remove,
-  findHabitsForStudy,
+  getTodayHabits,
 };

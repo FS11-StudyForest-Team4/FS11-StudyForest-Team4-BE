@@ -109,7 +109,7 @@ studiesRouter.get(
       if (!study) {
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
       }
-      const result = await habitRepository.findHabitsForStudy(studyId);
+      const result = await habitRepository.getTodayHabits(studyId);
       res.status(HTTP_STATUS.OK).json(result);
     } catch (error) {
       next(error);
