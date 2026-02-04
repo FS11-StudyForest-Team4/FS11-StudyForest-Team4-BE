@@ -15,6 +15,7 @@ export default [
       'no-unused-vars': [
         'warn',
         {
+          varsIgnorePattern: '^_',
           argsIgnorePattern: '^_',
           caughtErrorsIgnorePattern: '^_',
         },

@@ -1,12 +1,5 @@
 import { z } from 'zod';
 
-//PK 검증 스키마
-export const idParamSchema = z.object({
-  id: z.ulid({
-    message: 'ID 형식이 올바르지 않습니다.', //~~우린 ulid를 식별자로 쓰기로 약속했어요~~
-  }),
-});
-
 //스터디 수정 스키마 커스텀
 const optionalStringSchema = (minLen, errorMessage) =>
   z
@@ -16,9 +9,45 @@ const optionalStringSchema = (minLen, errorMessage) =>
     .refine((v) => v === undefined || v.length >= minLen, {
       message: errorMessage,
     });
+
+//PK 검증 스키마
+export const idParamSchema = z.object({
+  id: z.ulid({
+    message: 'ID 형식이 올바르지 않습니다.', //~~우린 ulid를 식별자로 쓰기로 약속했어요~~
+  }),
+});
+
+//private 접근 시 비밀번호 확인(로그인 예제 활용)
+export const authSchema = z.object({
+  password: z
+    .string({ error: '비밀번호는 필수입니다.' })
+    .min(1, '비밀번호를 입력해주세요.'),
+});
+
+//스터디 조회 스키마 - 검색과 정렬이 가능한 페이지네이션
+export const findStudySchema = z.object({
+  //페이지네이션 스키마
+  cursor: z
+    .ulid({
+      error: 'ID 형식이 올바르지 않습니다.',
+    })
+    .optional(), //최초 호출 시 커서 없음
+  limit: z.coerce.number().int().positive().max(100).default(6),
+
+  //검색 쿼리 스키마
+  q: z.string().optional(),
+
+  //정렬 스키마
+  orderBy: z
+    .enum(['LATEST', 'OLDEST', 'MOST_POINTS', 'LEAST_POINTS'])
+    .default('LATEST'),
+});
+
 //스터디 생성 스키마
 export const createStudySchema = z.object({
-  password: z.string().min(4, '비밀번호는 4자리 이상이어야 합니다.'), //비밀번호 4자리 이상 조건 임의로 달았슴다.
+  password: z
+    .string({ error: '비밀번호는 필수입니다.' })
+    .min(4, '비밀번호는 4자리 이상이어야 합니다.'), //비밀번호 4자리 이상 조건 임의로 달았슴다.
   title: z.string().min(1, '스터디 제목은 필수입니다.'),
   description: z.string(),
   nickName: z.string().min(1, '닉네임은 필수입니다.'), //사용자 입장에서는 시각적으로 구별할 방법이 닉넴+제목밖에 없을듯 해서 추가

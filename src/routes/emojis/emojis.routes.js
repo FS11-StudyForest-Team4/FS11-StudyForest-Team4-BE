@@ -30,6 +30,20 @@ emojisRouter.post('/:studyId', async (req, res, next) => {
   }
 });
 
+//POST /api/emojis/:studyId - 이모지 count +1
+emojisRouter.patch('/:studyId', async (req, res, next) => {
+  try {
+    const { studyId } = req.params;
+    const { name } = req.body;
+
+    const newEmoji = await emojiRepository.incrementOrCreate({ studyId, name });
+
+    res.status(HTTP_STATUS.OK).json(newEmoji);
+  } catch (error) {
+    next(error);
+  }
+});
+
 //DELETE /api/emojis/:studyId/:emojiId - 이모지 삭제
 emojisRouter.delete('/:studyId/:emojiId', async (req, res, next) => {
   try {
