@@ -1,6 +1,7 @@
 import { PrismaClient } from '#generated/prisma/client.ts';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { faker } from '@faker-js/faker';
+import { hashPassword } from '#utils';
 
 const NUM_STUDIES_TO_CREATE = 10;
 
@@ -46,7 +47,7 @@ const makeHabitlogInputsForHabit = (habitId, count) =>
   }));
 
 //이모지 데이터 생성 함수 (중복될수 있음)
-const makeEmojiInputsForStudy = (studyId, count) => 
+const makeEmojiInputsForStudy = (studyId, count) =>
   xs(count).map(() => ({
     studyId,
     name: faker.helpers.arrayElement(EMOJIS),
@@ -73,12 +74,29 @@ const resetDb = (prisma) =>
 
 // 스터디 시딩
 const seedStudies = async (prisma, count) => {
-  const data = xs(count).map(makeStudyInputs);
+  const rawData = xs(count).map(makeStudyInputs);
 
-  return await prisma.study.createManyAndReturn({
-    data,
-    select: { id: true },
+  const dataWithHashedPassword = await Promise.all(
+    rawData.map(async (study) => ({
+      ...study,
+      password: await hashPassword(study.password),
+    })),
+  );
+
+  const seedData = await prisma.study.createManyAndReturn({
+    data: dataWithHashedPassword,
+    select: { id: true, password: true, title: true },
   });
+
+  console.log('\n🌱시딩 스터디 목록');
+  seedData.forEach((study, index) => {
+    const plainPassword = rawData[index].password;
+    console.log(`[Study ${index + 1}] ID: ${study.id} | Title: ${study.title}`);
+    console.log(`           └─ password: ${plainPassword}`);
+  });
+  console.log('--------------------------------------------\n');
+
+  return seedData; // 다음 시딩(습관 등)을 위해 리턴
 };
 
 // 스터디에 습관 시딩
@@ -111,9 +129,7 @@ const seedEmojis = async (prisma, studies) => {
     const emojis = makeEmojiInputsForStudy(s.id, count);
 
     // 스터디 단위로 유니크
-    return Array.from(
-      new Map(emojis.map(e => [e.name, e])).values()
-    );
+    return Array.from(new Map(emojis.map((e) => [e.name, e])).values());
   });
 
   return await prisma.emoji.createManyAndReturn({
@@ -149,7 +165,7 @@ async function main(prisma) {
   console.log('✅ 기존 데이터 삭제 완료');
 
   const studies = await seedStudies(prisma, NUM_STUDIES_TO_CREATE);
-  console.log(`✅ ${studies.length}의 스터디가 생성되었습니다`);
+  console.log(`✅ ${studies.length}개의 스터디가 생성되었습니다`);
 
   const habits = await seedHabits(prisma, studies);
   console.log(`✅ ${habits.length}개의 습관이 생성되었습니다`);

@@ -5,7 +5,7 @@ import {
   studyRepository,
 } from '#repository';
 import { HTTP_STATUS, ERROR_MESSAGE } from '#constants';
-import { /*authMiddleware,*/ validate } from '#middlewares';
+import { authMiddleware, validate } from '#middlewares';
 import {
   createHabitSchema,
   habitlogQuerySchema,
@@ -13,12 +13,43 @@ import {
   findStudySchema,
   idParamSchema,
   updateStudySchema,
+  authSchema,
 } from './studies.schema.js';
-import { ForbiddenException, NotFoundException } from '#exceptions';
+import { NotFoundException } from '#exceptions';
+import { generateTokens, setAuthCookies } from '#utils';
 
 export const studiesRouter = express.Router();
 
 //라우터 우선순위로 인해 위로 배치
+// POST /studies/{studyId}/auth - 비밀번호 체크
+studiesRouter.post(
+  '/:id/auth',
+  validate('params', idParamSchema),
+  validate('body', authSchema),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { password } = req.body;
+
+      const study = await studyRepository.verifyPassword(id, password);
+      if (!study) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+          error: ERROR_MESSAGE.INVALID_CREDENTIALS,
+        });
+      }
+
+      const tokens = generateTokens(study);
+      setAuthCookies(res, tokens);
+
+      //비밀번호를 제외한 데이터 response
+      const { password: _, ...studyWithoutPassword } = study;
+      res.status(HTTP_STATUS.OK).json(studyWithoutPassword);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
 // GET /studies/{studyId}/habitlogs - 습관기록표 조회
 studiesRouter.get(
   '/:id/habitlogs',
@@ -43,7 +74,6 @@ studiesRouter.get(
     }
   },
 );
-
 
 //POST /studies/{studyId}/habits - 습관 등록
 studiesRouter.post(
@@ -115,7 +145,7 @@ studiesRouter.get(
 //특정 스터디 수정: PATCH /api/studies/{studyId}
 studiesRouter.patch(
   '/:id',
-  // authMiddleware,
+  authMiddleware,
   validate('params', idParamSchema),
   validate('body', updateStudySchema),
   async (req, res, next) => {
@@ -146,7 +176,7 @@ studiesRouter.patch(
 //특정 스터디 삭제: DELETE /api/studies/{studyId}
 studiesRouter.delete(
   '/:id',
-  // authMiddleware,
+  authMiddleware,
   validate('params', idParamSchema),
   async (req, res, next) => {
     try {
@@ -159,9 +189,9 @@ studiesRouter.delete(
       const deletedStudy = await studyRepository.remove(id);
 
       //204 send로 바꾸었었는데 메세지 포함하여 200으로 다시 바꿈
-      res
-        .status(HTTP_STATUS.OK)
-        .json({ message: `${deletedStudy.nickName}의 ${deletedStudy.title}스터디가 삭제되었습니다.` });
+      res.status(HTTP_STATUS.OK).json({
+        message: `${deletedStudy.nickName}의 ${deletedStudy.title}스터디가 삭제되었습니다.`,
+      });
     } catch (error) {
       next(error);
     }
@@ -182,7 +212,13 @@ studiesRouter.post(
         nickName,
         background,
       });
-      res.status(HTTP_STATUS.CREATED).json(newStudy);
+
+      const tokens = generateTokens(newStudy);
+      setAuthCookies(res, tokens);
+
+      const { password: _, ...studyWithoutPassword } = newStudy;
+
+      res.status(HTTP_STATUS.CREATED).json(studyWithoutPassword);
     } catch (error) {
       next(error);
     }
@@ -195,10 +231,10 @@ studiesRouter.get(
   validate('query', findStudySchema),
   async (req, res, next) => {
     try {
-      const { q, cursor, limit, orderBy } = req.query;
+      const { q: keyword, cursor, limit, orderBy } = req.query;
 
       const studies = await studyRepository.findAll(
-        { q, cursor, limit, orderBy },
+        { keyword, cursor, limit, orderBy },
         {
           emojis: {
             orderBy: {
@@ -208,14 +244,9 @@ studiesRouter.get(
         },
       );
 
-      const limitNum = Number(req.query.limit) || 6; //limit을 숫자로 지정
-      const lastStudy = studies[studies.length - 1]; //cursor 지정할 스터디 결정
-
-      const nextCursor = studies.length >= limitNum ? lastStudy.id : null; //다음 cursor 반환
-      res.status(HTTP_STATUS.OK).json({ data: studies, nextCursor });
+      res.status(HTTP_STATUS.OK).json(studies);
     } catch (error) {
       next(error);
     }
   },
 );
-
