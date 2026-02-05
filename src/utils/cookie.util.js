@@ -8,17 +8,17 @@ export const setAuthCookies = (res, tokens) => {
   // Access Token 쿠키
   res.cookie('accessToken', accessToken, {
     httpOnly: true, // JavaScript로 접근 불가 (XSS 방지)
-    secure: config.NODE_ENV === 'production', // HTTPS에서만 전송
-    sameSite: 'lax', // 크로스 사이트 요청 제한 (CSRF 방지)
+    secure: false, // 시연 중 임시 해제 
+    sameSite: 'lax', 
     maxAge: 15 * MINUTE_IN_MS, // 15분
     path: '/', // 모든 경로에서 쿠키 전송
   });
-
+  
   // Refresh Token 쿠키
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: config.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: false, // 시연 중 임시 해제
+    sameSite: 'lax', 
     maxAge: 1 * DAY_IN_MS, // 1일
     path: '/',
   });
