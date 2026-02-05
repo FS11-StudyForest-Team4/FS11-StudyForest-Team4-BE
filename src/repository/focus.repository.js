@@ -1,6 +1,5 @@
 import { prisma } from '#db/prisma.js';
 
-const POINT_PER_COMPLETE = 50;
 
 function getTotalPoint(studyId) {
   return prisma.study.findUnique({
@@ -33,14 +32,15 @@ function create(studyId) {
   });
 }
 
-function complete(focusId) {
+function complete(focusId, earnedPoint) {
+  const point = Number(earnedPoint);
   return prisma.$transaction(async (tx) => {
     // focus 완료
     const focus = await tx.focus.update({
       where: { id: focusId },
       data: {
         status: 'COMPLETED',
-        point: POINT_PER_COMPLETE,
+        point: point,
       },
       select: {
         id: true,
@@ -53,14 +53,14 @@ function complete(focusId) {
     // study totalPoint 적립
     await tx.study.update({
       where: { id: focus.studyId },
-      data: { totalPoint: { increment: POINT_PER_COMPLETE } },
+      data: { totalPoint: { increment: point } },
       select: { id: true },
     });
 
     return {
       focusId: focus.id,
       studyId: focus.studyId,
-      point: POINT_PER_COMPLETE,
+      point: point,
     };
   });
 }
