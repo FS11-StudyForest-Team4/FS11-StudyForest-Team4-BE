@@ -47,12 +47,13 @@ fociRouter.post('/', async (req, res, next) => {
 fociRouter.patch('/:focusId', async (req, res, next) => {
   try {
     const { focusId } = req.params;
+    const { earnedPoint } = req.body;
 
     if (!focusId) {
       throw new NotFoundException(ERROR_MESSAGE.FAILED_TO_COMPLETE_FOCUS);
     }
 
-    const result = await focusRepository.complete(focusId);
+    const result = await focusRepository.complete(focusId, earnedPoint);
 
     res.status(HTTP_STATUS.OK).json(result);
   } catch (error) {
