@@ -5,7 +5,7 @@ import {
   studyRepository,
 } from '#repository';
 import { HTTP_STATUS, ERROR_MESSAGE } from '#constants';
-import { authMiddleware, validate } from '#middlewares';
+import { /*authMiddleware,*/ validate } from '#middlewares';
 import {
   createHabitSchema,
   habitlogQuerySchema,
@@ -13,58 +13,57 @@ import {
   findStudySchema,
   idParamSchema,
   updateStudySchema,
-  authSchema,
+  // authSchema,
 } from './studies.schema.js';
 import { NotFoundException } from '#exceptions';
-import { generateTokens, setAuthCookies, verifyToken } from '#utils';
+// import { generateTokens, setAuthCookies, verifyToken } from '#utils';
 
 export const studiesRouter = express.Router();
 
-//라우터 우선순위로 인해 위로 배치
-// GET //studies/{studyId}/auth - 쿠키확인
-studiesRouter.get(
-  '/:id/auth',
-    async (req, res) => {
-      const token = req.cookies.accessToken;
-      const payload = verifyToken(token, 'access');
+// //라우터 우선순위로 인해 위로 배치
+// // GET //studies/{studyId}/auth - 쿠키확인
+// studiesRouter.get('/:id/auth', async (req, res) => {
+//   const token = req.cookies.accessToken;
+//   const payload = verifyToken(token, 'access');
 
-      if (!payload) {
-        return res.status(HTTP_STATUS.UNAUTHORIZED).json({error: ERROR_MESSAGE.INVALID_CREDENTIALS})
-      }
-      //비밀번호를 제외한 데이터 response
-      const study = await studyRepository.findById(payload.studyId)
-      res.json(study);
-  },
-);
+//   if (!payload) {
+//     return res
+//       .status(HTTP_STATUS.UNAUTHORIZED)
+//       .json({ error: ERROR_MESSAGE.INVALID_CREDENTIALS });
+//   }
+//   //비밀번호를 제외한 데이터 response
+//   const study = await studyRepository.findById(payload.studyId);
+//   res.json(study);
+// });
 
-// POST /studies/{studyId}/auth - 비밀번호 체크
-studiesRouter.post(
-  '/:id/auth',
-  validate('params', idParamSchema),
-  validate('body', authSchema),
-  async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      const { password } = req.body;
+// // POST /studies/{studyId}/auth - 비밀번호 체크
+// studiesRouter.post(
+//   '/:id/auth',
+//   validate('params', idParamSchema),
+//   validate('body', authSchema),
+//   async (req, res, next) => {
+//     try {
+//       const { id } = req.params;
+//       const { password } = req.body;
 
-      const study = await studyRepository.verifyPassword(id, password);
-      if (!study) {
-        return res.status(HTTP_STATUS.UNAUTHORIZED).json({
-          error: ERROR_MESSAGE.INVALID_CREDENTIALS,
-        });
-      }
+//       const study = await studyRepository.verifyPassword(id, password);
+//       if (!study) {
+//         return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+//           error: ERROR_MESSAGE.INVALID_CREDENTIALS,
+//         });
+//       }
 
-      const tokens = generateTokens(study);
-      setAuthCookies(res, tokens);
+//       const tokens = generateTokens(study);
+//       setAuthCookies(res, tokens);
 
-      //비밀번호를 제외한 데이터 response
-      const { password: _, ...studyWithoutPassword } = study;
-      res.status(HTTP_STATUS.OK).json(studyWithoutPassword);
-    } catch (error) {
-      next(error);
-    }
-  },
-);
+//       //비밀번호를 제외한 데이터 response
+//       const { password: _, ...studyWithoutPassword } = study;
+//       res.status(HTTP_STATUS.OK).json(studyWithoutPassword);
+//     } catch (error) {
+//       next(error);
+//     }
+//   },
+// );
 
 // GET /studies/{studyId}/habitlogs - 습관기록표 조회
 studiesRouter.get(
@@ -121,7 +120,7 @@ studiesRouter.get(
   async (req, res, next) => {
     try {
       const { id: studyId } = req.params;
-      
+
       const study = await studyRepository.findById(studyId);
       if (!study) {
         throw new NotFoundException(ERROR_MESSAGE.STUDY_NOT_FOUND);
@@ -162,7 +161,7 @@ studiesRouter.get(
 //특정 스터디 수정: PATCH /api/studies/{studyId}
 studiesRouter.patch(
   '/:id',
-  authMiddleware,
+  // authMiddleware,
   validate('params', idParamSchema),
   validate('body', updateStudySchema),
   async (req, res, next) => {
@@ -193,7 +192,7 @@ studiesRouter.patch(
 //특정 스터디 삭제: DELETE /api/studies/{studyId}
 studiesRouter.delete(
   '/:id',
-  authMiddleware,
+  // authMiddleware,
   validate('params', idParamSchema),
   async (req, res, next) => {
     try {
@@ -230,8 +229,8 @@ studiesRouter.post(
         background,
       });
 
-      const tokens = generateTokens(newStudy);
-      setAuthCookies(res, tokens);
+      // const tokens = generateTokens(newStudy);
+      // setAuthCookies(res, tokens);
 
       const { password: _, ...studyWithoutPassword } = newStudy;
 
