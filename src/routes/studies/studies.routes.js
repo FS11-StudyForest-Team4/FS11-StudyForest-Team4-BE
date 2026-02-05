@@ -42,7 +42,7 @@ studiesRouter.get('/:id/auth', async (req, res) => {
 studiesRouter.post(
   '/:id/auth',
   validate('params', idParamSchema),
-  validate('body', authSchema),
+  // validate('body', authSchema),
   async (req, res, next) => {
     try {
       const { id } = req.params;
@@ -55,8 +55,8 @@ studiesRouter.post(
         });
       }
 
-      const tokens = generateTokens(study);
-      setAuthCookies(res, tokens);
+      // const tokens = generateTokens(study);
+      // setAuthCookies(res, tokens);
 
       //비밀번호를 제외한 데이터 response
       const { password: _, ...studyWithoutPassword } = study;
