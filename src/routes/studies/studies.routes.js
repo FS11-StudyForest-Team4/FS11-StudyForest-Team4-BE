@@ -24,9 +24,9 @@ export const studiesRouter = express.Router();
 // GET //studies/{studyId}/auth - 쿠키확인
 studiesRouter.get(
   '/:id/auth',
+  authMiddleware,
     async (req, res) => {
-      const token = req.cookies.accessToken;
-      const payload = verifyToken(token, 'access');
+      const study = await studyRepository.findById(req.study.id);
 
       if (!payload) {
         return res.status(HTTP_STATUS.UNAUTHORIZED).json({error: ERROR_MESSAGE.INVALID_CREDENTIALS})
