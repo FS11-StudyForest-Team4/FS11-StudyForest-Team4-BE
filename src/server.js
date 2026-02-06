@@ -1,18 +1,26 @@
-import express from "express";
-import { prisma } from "#db/prisma.js";
-import { config } from "#config";
-import { cors } from "./middlewares/cors.middleware.js";
-import { setupGracefulShutdown } from "./utils/graceful-shutdown.util.js";
+import express from 'express';
+import { prisma } from '#db/prisma.js';
+import { config } from '#config';
+import { router as apiRouter } from './routes/index.js';
+import cookieParser from 'cookie-parser';
+import { setupGracefulShutdown } from '#utils';
+import { errorHandler, cors } from '#middlewares';
 
 const app = express();
 
+//json parsing
 app.use(express.json());
 
+//강사님 예제가 쿠키방식이라 쿠키 굽기로 했습니다.
+app.use(cookieParser());
+
+//cors
 app.use(cors);
 
-// app.use('/api', apiRouter);
+//API 라우터 등록
+app.use('/api', apiRouter);
 
-// app.use(errorHandler);
+app.use(errorHandler);
 
 const server = app.listen(config.PORT, () => {
   console.log(

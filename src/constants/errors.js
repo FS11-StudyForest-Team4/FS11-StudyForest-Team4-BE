@@ -1,7 +1,7 @@
 // Prisma 에러 코드 상수
 export const PRISMA_ERROR = {
-  UNIQUE_CONSTRAINT: 'P2002',
-  RECORD_NOT_FOUND: 'P2025',
+  UNIQUE_CONSTRAINT: 'P2002', // Unique constraint 위반
+  RECORD_NOT_FOUND: 'P2025', // 레코드를 찾을 수 없음
 };
 
 // 에러 메시지 상수
@@ -21,14 +21,13 @@ export const ERROR_MESSAGE = {
   FAILED_TO_FETCH_STUDY_WITH_HABITS: 'Failed to fetch study with habits', //오늘의 습관 조회(…{studyId}/habits) 500
 
   //이모지
-  FAILED_TO_FETCH_EMOJIS: 'Failed to fetch emojis', //이모지 조회 500
+  FAILED_TO_GET_EMOJIS: 'Failed to get emojis', //이모지 조회 500
   FAILED_TO_POST_EMOJIS: 'Failed to post emojis', //이모지 추가 500
   FAILED_TO_DELETE_EMOJIS: 'Failed to delete emojis', //이모지 삭제 500
   EMOJI_REQUIRED: 'emoji is required', //이모지 생성/수정 400 - 이모지 필수값
-
-  //비밀번호 확인(PRIVATE 진입 전)
-  INVALID_CREDENTIALS: 'Invalid password', //비밀번호 불일치 401 공통(스터디 생성, 습관, 집중)
-  FAILED_TO_VERIFY: 'Failed to verify', //비밀번호 불일치 500
+  EMOJI_NOT_FOUND: 'emoji is no found',
+  FAILED_TO_FETCH_EMOJIS: 'Failed to fetch emojis', //이모지 조회 500
+  //이모지 생성/수정 400 - 이모지 필수값
 
   // 습관
   FAILED_TO_CREATE_HABIT: 'Failed to create habit', //습관 생성 500
@@ -52,6 +51,9 @@ export const ERROR_MESSAGE = {
   INVALID_TOKEN: 'Invalid or expired token',
   USER_NOT_FOUND_FROM_TOKEN: 'User not found from token',
   AUTH_FAILED: 'Authentication failed',
+  //비밀번호 확인(PRIVATE 진입 전)
+  INVALID_CREDENTIALS: 'Invalid password', //비밀번호 불일치 401 공통(스터디 생성, 습관, 집중)
+  FAILED_TO_VERIFY: 'Failed to verify', //비밀번호 불일치 500
 
   // Validation (범용: 전체 바디, 인자, 쿼리)
   INVALID_INPUT: 'Invalid input',

@@ -1,8 +1,12 @@
 import { PrismaClient } from '#generated/prisma/client.ts';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { faker } from '@faker-js/faker';
+import { hashPassword } from '#utils';
 
 const NUM_STUDIES_TO_CREATE = 10;
+
+const SEEDING_PASSWORD = 'password1234';
+const HASHED_PASSWORD = await hashPassword(SEEDING_PASSWORD);
 
 const EMOJIS = ['🔥', '👏', '🙌', '🎉', '❤️', '😊', '🚀', '💯', '📚', '🏆'];
 
@@ -23,7 +27,7 @@ const xs = (n) => Array.from({ length: n }, (_, i) => i + 1);
 
 // 스터디 데이터 생성 함수
 const makeStudyInputs = () => ({
-  password: faker.internet.password({ length: 8 }),
+  password: HASHED_PASSWORD,
   title: faker.lorem.sentence({ min: 3, max: 7 }),
   description: faker.lorem.paragraph({ min: 1, max: 3 }, '\n\n'),
   nickName: faker.internet.username(),
@@ -46,7 +50,7 @@ const makeHabitlogInputsForHabit = (habitId, count) =>
   }));
 
 //이모지 데이터 생성 함수 (중복될수 있음)
-const makeEmojiInputsForStudy = (studyId, count) => 
+const makeEmojiInputsForStudy = (studyId, count) =>
   xs(count).map(() => ({
     studyId,
     name: faker.helpers.arrayElement(EMOJIS),
@@ -111,9 +115,7 @@ const seedEmojis = async (prisma, studies) => {
     const emojis = makeEmojiInputsForStudy(s.id, count);
 
     // 스터디 단위로 유니크
-    return Array.from(
-      new Map(emojis.map(e => [e.name, e])).values()
-    );
+    return Array.from(new Map(emojis.map((e) => [e.name, e])).values());
   });
 
   return await prisma.emoji.createManyAndReturn({
@@ -149,7 +151,7 @@ async function main(prisma) {
   console.log('✅ 기존 데이터 삭제 완료');
 
   const studies = await seedStudies(prisma, NUM_STUDIES_TO_CREATE);
-  console.log(`✅ ${studies.length}의 스터디가 생성되었습니다`);
+  console.log(`✅ ${studies.length}개의 스터디가 생성되었습니다`);
 
   const habits = await seedHabits(prisma, studies);
   console.log(`✅ ${habits.length}개의 습관이 생성되었습니다`);
