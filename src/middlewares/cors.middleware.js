@@ -3,8 +3,8 @@ export const cors = (req, res, next) => {
   const isProduction = process.env.NODE_ENV === 'production';
 
   const whiteList = [
-    'http://localhost:5001'
-    // 'https://your-production-site.com',
+    'http://localhost:5001',
+    'https://fs11-studyforest-team4.netlify.app/',
     // 'https://admin.your-site.com',
   ];
 
