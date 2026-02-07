@@ -31,11 +31,18 @@ export const findStudySchema = z.object({
     .ulid({
       error: 'ID 형식이 올바르지 않습니다.',
     })
+    .or(z.literal(''))
+    .transform((cursor) => (cursor === '' ? null : cursor)) //커서가 비어있으면 null 변환
+    .nullable() //null 가능
     .optional(), //최초 호출 시 커서 없음
+
   limit: z.coerce.number().int().positive().max(100).default(6),
 
   //검색 쿼리 스키마
-  q: z.string().optional(),
+  q: z
+    .string()
+    .transform((q) => (q.trim() === '' ? undefined : q))
+    .optional(),
 
   //정렬 스키마
   orderBy: z
